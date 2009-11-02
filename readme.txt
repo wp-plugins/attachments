@@ -2,7 +2,7 @@
 Contributors: jchristopher
 Donate link: http://mondaybynoon.com/donate/
 Tags: post, page, posts, pages, images, PDF, doc, Word, image, jpg, jpeg, picture, pictures, photos, attachment
-Requires at least: 2.8.5
+Requires at least: 2.8
 Tested up to: 2.9
 Stable tag: 1.0
 
@@ -20,25 +20,6 @@ There is a **screencast available** on the [plugin home page](http://mondaybynoo
 1. Upload `attachments` to your `~/wp-content/plugins/` directory
 1. Activate the plugin through the 'Plugins' menu in WordPress
 1. Update your templates where applicable (see **Usage**)
-
-== Frequently Asked Questions ==
-
-= Attachments are not showing up in my theme =
-
-You will need to edit your theme files where applicable. Please reference the **Usage** instructions
-
-= Where are uploads saved? =
-
-Attachments uses WordPress' built in Media library for uploads and storage.
-
-== Screenshots ==
-
-1. Screenshot coming soon
-
-== Changelog ==
-
-= 1.0 =
-* First stable release
 
 == Usage ==
 
@@ -73,3 +54,22 @@ Here is a basic implementation:
 ?>`
 
 You can elaborate on this implementation in any way you see fit.
+
+== Frequently Asked Questions ==
+
+= Attachments are not showing up in my theme =
+
+You will need to edit your theme files where applicable. Please reference the **Usage** instructions
+
+= Where are uploads saved? =
+
+Attachments uses WordPress' built in Media library for uploads and storage.
+
+== Screenshots ==
+
+1. Screenshot coming soon
+
+== Changelog ==
+
+= 1.0 =
+* First stable release
