@@ -23,6 +23,7 @@ foreach ($attachment_files as $post)
 		echo '<span class="attachment-file-name">' . $post->post_name . '</span>';
 		echo '<span class="attachment-file-location">' . $post->guid . '</span>';
 		echo '<span class="attachment-file-id">' . $post->ID . '</span>';
+		echo '<span class="attachment-file-mime">' . $post->post_mime_type . '</span>';
 		echo '</span>';
 		echo '<span class="attachments-thumbnail">';
 		echo wp_get_attachment_image( $post->ID, array(80, 60), true );
@@ -52,6 +53,7 @@ foreach ($attachment_files as $post)
 		echo '<span class="attachment-file-name">' . $post->post_name . '</span>';
 		echo '<span class="attachment-file-location">' . $post->guid . '</span>';
 		echo '<span class="attachment-file-id">' . $post->ID . '</span>';
+		echo '<span class="attachment-file-mime">' . $post->post_mime_type . '</span>';
 		echo '</span>';
 		echo '<span class="attachments-thumbnail">';
 		echo wp_get_attachment_image( $post->ID, array(80, 60), true );
@@ -85,6 +87,7 @@ foreach ($attachment_files as $post)
 		echo '<span class="attachment-file-name">' . $post->post_name . '</span>';
 		echo '<span class="attachment-file-location">' . $post->guid . '</span>';
 		echo '<span class="attachment-file-id">' . $post->ID . '</span>';
+		echo '<span class="attachment-file-mime">' . $post->post_mime_type . '</span>';
 		echo '</span>';
 		echo '<span class="attachments-thumbnail">';
 		echo wp_get_attachment_image( $post->ID, array(80, 60), true );

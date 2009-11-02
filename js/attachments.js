@@ -74,6 +74,7 @@ jQuery(document).ready(function() {
 			
 			attachment_name 		= jQuery(this).find('span.attachment-file-name').text();
 			attachment_location 	= jQuery(this).find('span.attachment-file-location').text();
+			attachment_mime			= jQuery(this).find('span.attachment-file-mime').text();
 			attachment_id			= jQuery(this).find('span.attachment-file-id').text();
 			attachment_thumbnail	= jQuery(this).find('span.attachments-thumbnail').html();
 			
@@ -87,6 +88,7 @@ jQuery(document).ready(function() {
 			new_attachments += '<div class="attachments-data">';
 			new_attachments += '<input type="hidden" name="attachment_name_' + attachment_index + '" id="attachment_name_' + attachment_index + '" value="' + attachment_name + '" />';
 			new_attachments += '<input type="hidden" name="attachment_location_' + attachment_index + '" id="attachment_location_' + attachment_index + '" value="' + attachment_location + '" />';
+			new_attachments += '<input type="hidden" name="attachment_mime_' + attachment_index + '" id="attachment_mime_' + attachment_index + '" value="' + attachment_mime + '" />';
 			new_attachments += '<input type="hidden" name="attachment_id_' + attachment_index + '" id="attachment_id_' + attachment_index + '" value="' + attachment_id + '" />';
 			new_attachments += '<input type="hidden" class="attachment_order" name="attachment_order_' + attachment_index + '" id="attachment_order_' + attachment_index + '" value="' + attachment_index + '" />';
 			new_attachments += '</div>';

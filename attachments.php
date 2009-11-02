@@ -3,7 +3,7 @@
 Plugin Name: Attachments
 Plugin URI: http://mondaybynoon.com/wordpress-attachments/
 Description: Attachments gives the ability to append any number of Media Library items to Pages and Posts
-Version: 1.0
+Version: 1.0.1
 Author: Jonathan Christopher
 Author URI: http://jchristopher.me
 */
@@ -67,7 +67,10 @@ function attachments_add()
 						$existing_attachments = unserialize(get_post_meta(intval($_GET['post']), '_attachments', true));
 						if( count($existing_attachments) > 0 )
 						{
-							usort($existing_attachments, "cmp");
+							if( count($existing_attachments) > 1 )
+							{
+								usort($existing_attachments, "cmp");
+							}
 							$attachment_index = 0;
 							foreach ($existing_attachments as $attachment) : $attachment_index++; ?>
 								<li class="attachments-file">
@@ -91,6 +94,7 @@ function attachments_add()
 									<div class="attachments-data">
 										<input type="hidden" name="attachment_name_<?=$attachment_index?>" id="attachment_name_<?=$attachment_index?>" value="<?=$attachment['name']?>" />
 										<input type="hidden" name="attachment_location_<?=$attachment_index?>" id="attachment_location_<?=$attachment_index?>" value="<?=$attachment['location']?>" />
+										<input type="hidden" name="attachment_mime_<?=$attachment_index?>" id="attachment_mime_<?=$attachment_index?>" value="<?=$attachment['mime']?>" />
 										<input type="hidden" name="attachment_id_<?=$attachment_index?>" id="attachment_id_<?=$attachment_index?>" value="<?=$attachment['id']?>" />
 										<input type="hidden" class="attachment_order" name="attachment_order_<?=$attachment_index?>" id="attachment_order_<?=$attachment_index?>" value="<?=$attachment['order']?>" />
 									</div>
@@ -188,6 +192,7 @@ function attachments_save($post_id)
 						'caption' 			=> $_POST['attachment_caption_' . $i],
 						'name' 				=> $_POST['attachment_name_' . $i],
 						'location' 			=> $_POST['attachment_location_' . $i],
+						'mime' 				=> $_POST['attachment_mime_' . $i],
 						'id' 				=> $_POST['attachment_id_' . $i],
 						'order' 			=> $_POST['attachment_order_' . $i]
 					);
@@ -220,11 +225,15 @@ function attachments_get_attachments($post_id=null)
 	if( count($existing_attachments) > 0 )
 	{
 		$post_attachments = array();
-		usort($existing_attachments, "cmp");
+		if( count($existing_attachments) > 1 )
+		{
+			usort($existing_attachments, "cmp");
+		}
 		foreach ($existing_attachments as $attachment)
 		{
 			array_push($post_attachments, array(
 				'id' 			=> $attachment['id'],
+				'mime' 			=> $attachment['mime'],
 				'title' 		=> $attachment['title'],
 				'caption' 		=> $attachment['caption'],
 				'location' 		=> $attachment['location']
