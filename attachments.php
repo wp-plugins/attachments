@@ -186,17 +186,19 @@ function attachments_save($post_id)
 			$attachments_data = array();
 			for ($i=1; $i <= $total_attachments; $i++)
 			{
-				$attachment_index = intval(substr($key, 20, strlen($key)));
-				$attachment_details = array(
-						'title' 			=> $_POST['attachment_title_' . $i],
-						'caption' 			=> $_POST['attachment_caption_' . $i],
-						'name' 				=> $_POST['attachment_name_' . $i],
-						'location' 			=> $_POST['attachment_location_' . $i],
-						'mime' 				=> $_POST['attachment_mime_' . $i],
-						'id' 				=> $_POST['attachment_id_' . $i],
-						'order' 			=> $_POST['attachment_order_' . $i]
-					);
-				array_push($attachments_data, $attachment_details);
+				if( !empty($_POST['attachment_location_' . $i]) )
+				{
+					$attachment_details = array(
+							'title' 			=> $_POST['attachment_title_' . $i],
+							'caption' 			=> $_POST['attachment_caption_' . $i],
+							'name' 				=> $_POST['attachment_name_' . $i],
+							'location' 			=> $_POST['attachment_location_' . $i],
+							'mime' 				=> $_POST['attachment_mime_' . $i],
+							'id' 				=> $_POST['attachment_id_' . $i],
+							'order' 			=> $_POST['attachment_order_' . $i]
+						);
+					array_push($attachments_data, $attachment_details);
+				}
 			}
 		}
 		
