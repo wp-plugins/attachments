@@ -4,7 +4,7 @@ Donate link: http://mondaybynoon.com/donate/
 Tags: post, page, posts, pages, images, PDF, doc, Word, image, jpg, jpeg, picture, pictures, photos, attachment
 Requires at least: 2.8
 Tested up to: 2.9
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 
 Attachments allows you to append any number of items from your WordPress Media Library to Posts and Pages
 
@@ -20,6 +20,32 @@ There is a **screencast available** on the [plugin home page](http://mondaybynoo
 1. Upload `attachments` to your `~/wp-content/plugins/` directory
 1. Activate the plugin through the 'Plugins' menu in WordPress
 1. Update your templates where applicable (see **Usage**)
+
+== Frequently Asked Questions ==
+
+= Attachments are not showing up in my theme =
+
+You will need to edit your theme files where applicable. Please reference the **Usage** instructions
+
+= Where are uploads saved? =
+
+Attachments uses WordPress' built in Media library for uploads and storage.
+
+== Changelog ==
+
+= 1.0.2 =
+* Fixed an issue with deleting Attachments
+
+= 1.0.1 =
+* Fixed an error when adding only one attachment
+* Added MIME type array value (`mime`) to available attachments
+
+= 1.0 =
+* First stable release
+
+== Screencast ==
+
+There is a **screencast available** on the [plugin home page](http://mondaybynoon.com/wordpress-attachments/)
 
 == Usage ==
 
@@ -54,28 +80,3 @@ Here is a basic implementation:
     echo '</ul>';
   }
 ?>`
-
-You can elaborate on this implementation in any way you see fit.
-
-== Frequently Asked Questions ==
-
-= Attachments are not showing up in my theme =
-
-You will need to edit your theme files where applicable. Please reference the **Usage** instructions
-
-= Where are uploads saved? =
-
-Attachments uses WordPress' built in Media library for uploads and storage.
-
-== Screencast ==
-
-There is a **screencast available** on the [plugin home page](http://mondaybynoon.com/wordpress-attachments/)
-
-== Changelog ==
-
-= 1.0.1 =
-* Fixed an error when adding only one attachment
-* Added MIME type array value (`mime`) to available attachments
-
-= 1.0 =
-* First stable release
