@@ -65,9 +65,9 @@ You will need to edit your theme files where applicable. Please reference the **
 
 Attachments uses WordPress' built in Media library for uploads and storage.
 
-== Screenshots ==
+== Screencast ==
 
-1. Screenshot coming soon
+There is a **screencast available** on the [plugin home page](http://mondaybynoon.com/wordpress-attachments/)
 
 == Changelog ==
 
