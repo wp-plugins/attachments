@@ -4,7 +4,7 @@ Donate link: http://mondaybynoon.com/donate/
 Tags: post, page, posts, pages, images, PDF, doc, Word, image, jpg, jpeg, picture, pictures, photos, attachment
 Requires at least: 2.8
 Tested up to: 2.9
-Stable tag: 1.0.2
+Stable tag: 1.0.3
 
 Attachments allows you to append any number of items from your WordPress Media Library to Posts and Pages
 
@@ -32,6 +32,9 @@ You will need to edit your theme files where applicable. Please reference the **
 Attachments uses WordPress' built in Media library for uploads and storage.
 
 == Changelog ==
+
+= 1.0.3 =
+* Fixed an issue when `attachments_get_attachments()` returning no Attachments generating a warning
 
 = 1.0.2 =
 * Fixed an issue with deleting Attachments

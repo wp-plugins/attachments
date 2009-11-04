@@ -3,7 +3,7 @@
 Plugin Name: Attachments
 Plugin URI: http://mondaybynoon.com/wordpress-attachments/
 Description: Attachments gives the ability to append any number of Media Library items to Pages and Posts
-Version: 1.0.2
+Version: 1.0.3
 Author: Jonathan Christopher
 Author URI: http://jchristopher.me
 */
@@ -25,16 +25,22 @@ Author URI: http://jchristopher.me
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+
+// ===========
+// = GLOBALS =
+// ===========
+
 global $wpdb;
+
+
 
 // =========
 // = HOOKS =
 // =========
+
 add_action('admin_menu', 'attachments_init');
 add_action('admin_head', 'attachments_init_js');
 add_action('save_post', 'attachments_save');
-
-
 
 
 
@@ -42,12 +48,27 @@ add_action('save_post', 'attachments_save');
 // = FUNCTIONS =
 // =============
 
-
+/**
+ * Compares two array values with the same key "order"
+ *
+ * @param string $a First value
+ * @param string $b Second value
+ * @return int
+ * @author Jonathan Christopher
+ */
 function cmp($a, $b)
 {
     return strcmp($a["order"], $b["order"]);
 }
 
+
+
+/**
+ * Inserts HTML for meta box, including all existing attachments
+ *
+ * @return void
+ * @author Jonathan Christopher
+ */
 function attachments_add()
 {?>
 	
@@ -118,7 +139,7 @@ function attachments_add()
 
 
 /**
- * Creates meta box on all post and page pages
+ * Creates meta box on all Posts and Pages
  *
  * @return void
  * @author Jonathan Christopher
@@ -135,6 +156,12 @@ function attachments_meta_box()
 
 
 
+/**
+ * Echos JavaScript that sets some required global variables
+ *
+ * @return void
+ * @author Jonathan Christopher
+ */
 function attachments_init_js()
 {
 	echo '<script type="text/javascript" charset="utf-8">';
@@ -146,6 +173,13 @@ function attachments_init_js()
 
 
 
+/**
+ * Fired when Post or Page is saved. Serializes all attachment data and saves to post_meta
+ *
+ * @param int $post_id The ID of the current post
+ * @return void
+ * @author Jonathan Christopher
+ */
 function attachments_save($post_id)
 {
 	// verify this came from the our screen and with proper authorization,
@@ -212,7 +246,13 @@ function attachments_save($post_id)
 
 
 
-
+/**
+ * Retrieves all Attachments for provided Post or Page
+ *
+ * @param int $post_id (optional) ID of target Post or Page, otherwise pulls from global $post
+ * @return array $post_attachments
+ * @author Jonathan Christopher
+ */
 function attachments_get_attachments($post_id=null)
 {
 	global $post;
@@ -224,7 +264,7 @@ function attachments_get_attachments($post_id=null)
 	
 	$existing_attachments = unserialize(get_post_meta($post_id, '_attachments', true));
 	
-	if( count($existing_attachments) > 0 )
+	if( is_array($existing_attachments) && count($existing_attachments) > 0 )
 	{
 		$post_attachments = array();
 		if( count($existing_attachments) > 1 )
@@ -248,11 +288,8 @@ function attachments_get_attachments($post_id=null)
 
 
 
-
-
 /**
- * This is the main initialization function, it will check for existing attachments 
- * as well as invoke the necessary meta_box
+ * This is the main initialization function, it will invoke the necessary meta_box
  *
  * @return void
  * @author Jonathan Christopher
