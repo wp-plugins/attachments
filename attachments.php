@@ -3,7 +3,7 @@
 Plugin Name: Attachments
 Plugin URI: http://mondaybynoon.com/wordpress-attachments/
 Description: Attachments gives the ability to append any number of Media Library items to Pages and Posts
-Version: 1.0.4
+Version: 1.0.4.1
 Author: Jonathan Christopher
 Author URI: http://jchristopher.me
 */
@@ -80,7 +80,7 @@ function attachments_add()
 		</ul>
 		
 		<div id="attachments-list">
-			<input type="hidden" name="attachments_nonce" id="attachments_nonce" value="<?=wp_create_nonce( plugin_basename(__FILE__) )?>" />
+			<input type="hidden" name="attachments_nonce" id="attachments_nonce" value="<?php echo wp_create_nonce( plugin_basename(__FILE__) ); ?>" />
 			<ul>
 				<?php
 					if( !empty($_GET['post']) )
@@ -99,31 +99,31 @@ function attachments_add()
 									<li class="attachments-file">
 										<h2>
 											<a href="#" class="attachment-handle">
-												<span class="attachment-handle-icon"><img src="<?=WP_PLUGIN_URL?>/attachments/images/handle.gif" alt="Drag" /></span>
+												<span class="attachment-handle-icon"><img src="<?php echo WP_PLUGIN_URL; ?>/attachments/images/handle.gif" alt="Drag" /></span>
 											</a>
-											<span class="attachment-name"><?=$attachment['name']?></span>
+											<span class="attachment-name"><?php echo $attachment['name']; ?></span>
 											<span class="attachment-delete"><a href="#">Delete</a></span>
 										</h2>
 										<div class="attachments-fields">
-											<div class="textfield" id="field_attachment_title_<?=$attachment_index?>">
-												<label for="attachment_title_<?=$attachment_index?>">Title</label>
-												<input type="text" id="attachment_title_<?=$attachment_index?>" name="attachment_title_<?=$attachment_index?>" value="<?=$attachment['title']?>" size="20" />
+											<div class="textfield" id="field_attachment_title_<?php echo $attachment_index ; ?>">
+												<label for="attachment_title_<?php echo $attachment_index; ?>">Title</label>
+												<input type="text" id="attachment_title_<?php echo $attachment_index; ?>" name="attachment_title_<?php echo $attachment_index; ?>" value="<?php echo $attachment['title']; ?>" size="20" />
 											</div>
-											<div class="textfield" id="field_attachment_caption_<?=$attachment_index?>">
-												<label for="attachment_caption_<?=$attachment_index?>">Caption</label>
-												<input type="text" id="attachment_caption_<?=$attachment_index?>" name="attachment_caption_<?=$attachment_index?>" value="<?=$attachment['caption']?>" size="20" />
+											<div class="textfield" id="field_attachment_caption_<?php echo $attachment_index; ?>">
+												<label for="attachment_caption_<?php echo $attachment_index; ?>">Caption</label>
+												<input type="text" id="attachment_caption_<?php echo $attachment_index; >" name="attachment_caption_<?php echo $attachment_index; ?>" value="<?php echo $attachment['caption']; ?>" size="20" />
 											</div>
 										</div>
 										<div class="attachments-data">
-											<input type="hidden" name="attachment_name_<?=$attachment_index?>" id="attachment_name_<?=$attachment_index?>" value="<?=$attachment['name']?>" />
-											<input type="hidden" name="attachment_location_<?=$attachment_index?>" id="attachment_location_<?=$attachment_index?>" value="<?=$attachment['location']?>" />
-											<input type="hidden" name="attachment_mime_<?=$attachment_index?>" id="attachment_mime_<?=$attachment_index?>" value="<?=$attachment['mime']?>" />
-											<input type="hidden" name="attachment_id_<?=$attachment_index?>" id="attachment_id_<?=$attachment_index?>" value="<?=$attachment['id']?>" />
-											<input type="hidden" class="attachment_order" name="attachment_order_<?=$attachment_index?>" id="attachment_order_<?=$attachment_index?>" value="<?=$attachment['order']?>" />
+											<input type="hidden" name="attachment_name_<?php echo $attachment_index; ?>" id="attachment_name_<?php echo $attachment_index; ?>" value="<?php echo $attachment['name']; ?>" />
+											<input type="hidden" name="attachment_location_<?php echo $attachment_index; ?>" id="attachment_location_<?php echo $attachment_index; ?>" value="<?php echo $attachment['location']; ?>" />
+											<input type="hidden" name="attachment_mime_<?php echo $attachment_index; ?>" id="attachment_mime_<?php echo $attachment_index; ?>" value="<?php echo $attachment['mime']; ?>" />
+											<input type="hidden" name="attachment_id_<?php echo $attachment_index; ?>" id="attachment_id_<?php echo $attachment_index; ?>" value="<?php echo $attachment['id']; ?>" />
+											<input type="hidden" class="attachment_order" name="attachment_order_<?php echo $attachment_index; ?>" id="attachment_order_<?php echo $attachment_index; ?>" value="<?php echo $attachment['order']; ?>" />
 										</div>
 										<div class="attachment-thumbnail">
 											<span class="attachments-thumbnail">
-												<?=wp_get_attachment_image( $attachment['id'], array(80, 60), true );?>
+												<?php echo wp_get_attachment_image( $attachment['id'], array(80, 60), true ); ?>
 											</span>
 										</div>
 									</li>
