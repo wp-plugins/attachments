@@ -4,7 +4,7 @@ Donate link: http://mondaybynoon.com/donate/
 Tags: post, page, posts, pages, images, PDF, doc, Word, image, jpg, jpeg, picture, pictures, photos, attachment
 Requires at least: 2.8
 Tested up to: 2.9
-Stable tag: 1.0.4.1
+Stable tag: 1.0.4.2
 
 Attachments allows you to append any number of items from your WordPress Media Library to Posts and Pages
 

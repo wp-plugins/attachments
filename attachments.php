@@ -3,7 +3,7 @@
 Plugin Name: Attachments
 Plugin URI: http://mondaybynoon.com/wordpress-attachments/
 Description: Attachments gives the ability to append any number of Media Library items to Pages and Posts
-Version: 1.0.4.1
+Version: 1.0.4.2
 Author: Jonathan Christopher
 Author URI: http://jchristopher.me
 */
@@ -111,7 +111,7 @@ function attachments_add()
 											</div>
 											<div class="textfield" id="field_attachment_caption_<?php echo $attachment_index; ?>">
 												<label for="attachment_caption_<?php echo $attachment_index; ?>">Caption</label>
-												<input type="text" id="attachment_caption_<?php echo $attachment_index; >" name="attachment_caption_<?php echo $attachment_index; ?>" value="<?php echo $attachment['caption']; ?>" size="20" />
+												<input type="text" id="attachment_caption_<?php echo $attachment_index; ?>" name="attachment_caption_<?php echo $attachment_index; ?>" value="<?php echo $attachment['caption']; ?>" size="20" />
 											</div>
 										</div>
 										<div class="attachments-data">
