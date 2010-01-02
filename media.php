@@ -3,9 +3,21 @@ error_reporting(0);
 require( dirname(__FILE__) . '/../../../wp-config.php' );
 
 global $wpdb;
+global $userdata;
 
-$attachment_files = $wpdb->get_results( "SELECT * FROM $wpdb->posts WHERE post_type = 'attachment' ORDER BY post_modified DESC" );
+// set the user info in case we need to limit to the current author
+get_currentuserinfo();
 
+if( get_option('attachments_limit_to_user') == 'true' )
+{
+	$attachments_sql = "SELECT * FROM $wpdb->posts WHERE post_type = 'attachment' AND post_author = " . $userdata->ID . " ORDER BY post_modified DESC";
+}
+else
+{
+	$attachments_sql = "SELECT * FROM $wpdb->posts WHERE post_type = 'attachment' ORDER BY post_modified DESC";
+}
+
+$attachment_files = $wpdb->get_results( $attachments_sql );
 
 // ================
 // = IMAGES FIRST =

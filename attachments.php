@@ -3,9 +3,9 @@
 Plugin Name: Attachments
 Plugin URI: http://mondaybynoon.com/wordpress-attachments/
 Description: Attachments gives the ability to append any number of Media Library items to Pages and Posts
-Version: 1.0.4.2
+Version: 1.0.5
 Author: Jonathan Christopher
-Author URI: http://jchristopher.me
+Author URI: http://jchristopher.me/
 */
 
 /*  Copyright 2009 Jonathan Christopher  (email : jonathandchr@gmail.com)
@@ -41,6 +41,7 @@ global $wpdb;
 add_action('admin_menu', 'attachments_init');
 add_action('admin_head', 'attachments_init_js');
 add_action('save_post', 'attachments_save');
+add_action('admin_menu', 'attachments_menu');
 
 
 
@@ -60,6 +61,50 @@ function cmp($a, $b)
 {
     return strcmp($a["order"], $b["order"]);
 }
+
+
+
+
+/**
+ * Creates the markup for the WordPress admin options page
+ *
+ * @return void
+ * @author Jonathan Christopher
+ */
+function attachments_options()
+{ ?>
+	<div class="wrap">
+		<div id="icon-options-general" class="icon32"><br /></div>
+		<h2>Attachments Options</h2>
+		<form action="options.php" method="post">
+			<?php wp_nonce_field('update-options'); ?>
+			<div style="padding:20px 0 0 0; overflow:hidden; zoom:1;">
+				<input type="checkbox" name="attachments_limit_to_user" style="display:block; float:left; margin-top:2px;" value="true"<?php if (get_option('attachments_limit_to_user')=='true') : ?> checked="checked"<?php endif ?> />
+				<span style="display:block; float:left; padding:0 0 0 7px;">Users can only see their own attachments</span>
+			</div>
+			<input type="hidden" name="action" value="update" />
+			<input type="hidden" name="page_options" value="attachments_limit_to_user" />
+			<p class="submit">
+				<input type="submit" class="button-primary" value="Save" />
+			</p>
+		</form>
+	</div>
+<?php }
+
+
+
+
+/**
+ * Creates the entry for Attachments Options under Settings in the WordPress Admin
+ *
+ * @return void
+ * @author Jonathan Christopher
+ */
+function attachments_menu()
+{
+	add_options_page('Settings', 'Attachments', 8, __FILE__, 'attachments_options');
+}
+
 
 
 
