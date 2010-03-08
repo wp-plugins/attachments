@@ -3,8 +3,8 @@ Contributors: jchristopher
 Donate link: http://mondaybynoon.com/donate/
 Tags: post, page, posts, pages, images, PDF, doc, Word, image, jpg, jpeg, picture, pictures, photos, attachment
 Requires at least: 2.8
-Tested up to: 2.9.1
-Stable tag: 1.0.5
+Tested up to: 2.9.2
+Stable tag: 1.0.7
 
 Attachments allows you to append any number of items from your WordPress Media Library to Posts and Pages
 
@@ -31,7 +31,20 @@ You will need to edit your theme files where applicable. Please reference the **
 
 Attachments uses WordPress' built in Media library for uploads and storage.
 
+= I lost my Attachments after upgrading! =
+
+***Do not update any Post/Page with Attachments***, the data has not been lost. Please [contact me](http://mondaybynoon.com/contact/) to begin a bugfix
+
+== Screenshots ==
+
+1. Attachments meta box on every Post and Page
+
 == Changelog ==
+
+= 1.0.7 =
+* Numerous fixes to enhance data integrity
+* Implemented a change to improve data portability
+* Moved to Thickbox (from Shadowbox) as to be more in line with WordPress
 
 = 1.0.5 =
 * Added the option to limit available Attachments to the current user (defaults to *false*)
@@ -54,6 +67,11 @@ Attachments uses WordPress' built in Media library for uploads and storage.
 
 = 1.0 =
 * First stable release
+
+== Upgrade Notice ==
+
+= 1.0.7 =
+Attachments are now stored in such a way that removes an in-place limitation on string lengths for both titles and captions.
 
 == Screencast ==
 

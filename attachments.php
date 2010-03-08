@@ -3,9 +3,9 @@
 Plugin Name: Attachments
 Plugin URI: http://mondaybynoon.com/wordpress-attachments/
 Description: Attachments gives the ability to append any number of Media Library items to Pages and Posts
-Version: 1.0.5
+Version: 1.0.7
 Author: Jonathan Christopher
-Author URI: http://jchristopher.me/
+Author URI: http://mondaybynoon.com/
 */
 
 /*  Copyright 2009 Jonathan Christopher  (email : jonathandchr@gmail.com)
@@ -57,9 +57,23 @@ add_action('admin_menu', 'attachments_menu');
  * @return int
  * @author Jonathan Christopher
  */
-function cmp($a, $b)
+function attachments_cmp($a, $b)
 {
-    return strcmp($a["order"], $b["order"]);
+	$a = intval( $a['order'] );
+	$b = intval( $b['order'] );
+	
+	if( $a < $b )
+	{
+		return -1;
+	}
+	else if( $a > $b )
+	{
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
 }
 
 
@@ -120,8 +134,8 @@ function attachments_add()
 	<div id="attachments-inner">
 		
 		<ul id="attachments-actions">
-			<li id="attachments-browse"><a href="#" class="button button-highlighted browse-attachments">Browse</a></li>
-			<li id="attachments-add-new"><a href="media-upload.php?post_id=-1257080594&amp;type=image&amp;TB_iframe=true&amp;width=640&amp;height=523" class="button thickbox">Add New</a></li>
+			<li id="attachments-browse"><a href="<?php echo WP_PLUGIN_URL . '/attachments/media.php'; ?>?width=640&amp;height=523" class="button thickbox button-highlighted browse-attachments">Browse Existing</a></li>
+			<li id="attachments-add-new"><a href="media-upload.php?type=image&amp;TB_iframe=true&amp;width=640&amp;height=523" class="button thickbox">Add to Media Library</a></li>
 		</ul>
 		
 		<div id="attachments-list">
@@ -130,50 +144,42 @@ function attachments_add()
 				<?php
 					if( !empty($_GET['post']) )
 					{
-						$existing_attachments = unserialize(get_post_meta(intval($_GET['post']), '_attachments', true));
-						if( count($existing_attachments) > 0 )
+						// get all attachments
+						$existing_attachments = attachments_get_attachments( intval( $_GET['post'] ) );
+						
+						if( is_array($existing_attachments) && !empty($existing_attachments) )
 						{
-							if( count($existing_attachments) > 1 )
-							{
-								usort($existing_attachments, "cmp");
-							}
 							$attachment_index = 0;
-							if( is_array($existing_attachments) && !empty($existing_attachments) )
-							{
-								foreach ($existing_attachments as $attachment) : $attachment_index++; ?>
-									<li class="attachments-file">
-										<h2>
-											<a href="#" class="attachment-handle">
-												<span class="attachment-handle-icon"><img src="<?php echo WP_PLUGIN_URL; ?>/attachments/images/handle.gif" alt="Drag" /></span>
-											</a>
-											<span class="attachment-name"><?php echo $attachment['name']; ?></span>
-											<span class="attachment-delete"><a href="#">Delete</a></span>
-										</h2>
-										<div class="attachments-fields">
-											<div class="textfield" id="field_attachment_title_<?php echo $attachment_index ; ?>">
-												<label for="attachment_title_<?php echo $attachment_index; ?>">Title</label>
-												<input type="text" id="attachment_title_<?php echo $attachment_index; ?>" name="attachment_title_<?php echo $attachment_index; ?>" value="<?php echo $attachment['title']; ?>" size="20" />
-											</div>
-											<div class="textfield" id="field_attachment_caption_<?php echo $attachment_index; ?>">
-												<label for="attachment_caption_<?php echo $attachment_index; ?>">Caption</label>
-												<input type="text" id="attachment_caption_<?php echo $attachment_index; ?>" name="attachment_caption_<?php echo $attachment_index; ?>" value="<?php echo $attachment['caption']; ?>" size="20" />
-											</div>
+							foreach ($existing_attachments as $attachment) : $attachment_index++; ?>
+								<li class="attachments-file">
+									<h2>
+										<a href="#" class="attachment-handle">
+											<span class="attachment-handle-icon"><img src="<?php echo WP_PLUGIN_URL; ?>/attachments/images/handle.gif" alt="Drag" /></span>
+										</a>
+										<span class="attachment-name"><?php echo $attachment['name']; ?></span>
+										<span class="attachment-delete"><a href="#">Delete</a></span>
+									</h2>
+									<div class="attachments-fields">
+										<div class="textfield" id="field_attachment_title_<?php echo $attachment_index ; ?>">
+											<label for="attachment_title_<?php echo $attachment_index; ?>">Title</label>
+											<input type="text" id="attachment_title_<?php echo $attachment_index; ?>" name="attachment_title_<?php echo $attachment_index; ?>" value="<?php echo $attachment['title']; ?>" size="20" />
 										</div>
-										<div class="attachments-data">
-											<input type="hidden" name="attachment_name_<?php echo $attachment_index; ?>" id="attachment_name_<?php echo $attachment_index; ?>" value="<?php echo $attachment['name']; ?>" />
-											<input type="hidden" name="attachment_location_<?php echo $attachment_index; ?>" id="attachment_location_<?php echo $attachment_index; ?>" value="<?php echo $attachment['location']; ?>" />
-											<input type="hidden" name="attachment_mime_<?php echo $attachment_index; ?>" id="attachment_mime_<?php echo $attachment_index; ?>" value="<?php echo $attachment['mime']; ?>" />
-											<input type="hidden" name="attachment_id_<?php echo $attachment_index; ?>" id="attachment_id_<?php echo $attachment_index; ?>" value="<?php echo $attachment['id']; ?>" />
-											<input type="hidden" class="attachment_order" name="attachment_order_<?php echo $attachment_index; ?>" id="attachment_order_<?php echo $attachment_index; ?>" value="<?php echo $attachment['order']; ?>" />
+										<div class="textfield" id="field_attachment_caption_<?php echo $attachment_index; ?>">
+											<label for="attachment_caption_<?php echo $attachment_index; ?>">Caption</label>
+											<input type="text" id="attachment_caption_<?php echo $attachment_index; ?>" name="attachment_caption_<?php echo $attachment_index; ?>" value="<?php echo $attachment['caption']; ?>" size="20" />
 										</div>
-										<div class="attachment-thumbnail">
-											<span class="attachments-thumbnail">
-												<?php echo wp_get_attachment_image( $attachment['id'], array(80, 60), true ); ?>
-											</span>
-										</div>
-									</li>
-								<?php endforeach;
-							}
+									</div>
+									<div class="attachments-data">
+										<input type="hidden" name="attachment_id_<?php echo $attachment_index; ?>" id="attachment_id_<?php echo $attachment_index; ?>" value="<?php echo $attachment['id']; ?>" />
+										<input type="hidden" class="attachment_order" name="attachment_order_<?php echo $attachment_index; ?>" id="attachment_order_<?php echo $attachment_index; ?>" value="<?php echo $attachment['order']; ?>" />
+									</div>
+									<div class="attachment-thumbnail">
+										<span class="attachments-thumbnail">
+											<?php echo wp_get_attachment_image( $attachment['id'], array(80, 60), true ); ?>
+										</span>
+									</div>
+								</li>
+							<?php endforeach;
 						}
 					}
 				?>
@@ -215,7 +221,6 @@ function attachments_init_js()
 	echo '<script type="text/javascript" charset="utf-8">';
 	echo '	var attachments_base = "' . WP_PLUGIN_URL . '/attachments"; ';
 	echo '	var attachments_media = ""; ';
-	echo '	Shadowbox.init({ skipSetup:true, onClose:attachments_update }); ';
 	echo '</script>';
 }
 
@@ -227,6 +232,7 @@ function attachments_init_js()
  * @param int $post_id The ID of the current post
  * @return void
  * @author Jonathan Christopher
+ * @author JR Tashjian
  */
 function attachments_save($post_id)
 {
@@ -251,45 +257,51 @@ function attachments_save($post_id)
 	}
 
 	// OK, we're authenticated: we need to find and save the data
-	$total_attachments = 0;
+	
+	// delete all current attachments meta
+	// moved outside conditional, else we can never delete all attachments
+	delete_post_meta($post_id, '_attachments');
+	
+	// Since we're allowing Attachments to be sortable, we can't simply increment a counter
+	// we need to keep track of the IDs we're given
+	$attachment_ids = array();
 	
 	// We'll build our array of attachments
 	foreach($_POST as $key => $data) {
 		
-		// Arbitrarily using the location input
-		if( substr($key, 0, 20) == 'attachment_location_' )
+		// Arbitrarily using the id
+		if( substr($key, 0, 14) == 'attachment_id_' )
 		{
-			$total_attachments++;
+			array_push( $attachment_ids, substr( $key, 14, strlen( $key ) ) );
 		}
 		
-		// If we have attachments, there's work to do
-		if( $total_attachments > 0 )
+	}
+		
+	// If we have attachments, there's work to do
+	if( !empty( $attachment_ids ) )
+	{
+		
+		foreach ( $attachment_ids as $i )
 		{
-			$attachments_data = array();
-			for ($i=1; $i <= $total_attachments; $i++)
+			if( !empty( $_POST['attachment_id_' . $i] ) )
 			{
-				if( !empty($_POST['attachment_location_' . $i]) )
-				{
-					$attachment_details = array(
-							'title' 			=> $_POST['attachment_title_' . $i],
-							'caption' 			=> $_POST['attachment_caption_' . $i],
-							'name' 				=> $_POST['attachment_name_' . $i],
-							'location' 			=> $_POST['attachment_location_' . $i],
-							'mime' 				=> $_POST['attachment_mime_' . $i],
-							'id' 				=> $_POST['attachment_id_' . $i],
-							'order' 			=> $_POST['attachment_order_' . $i]
-						);
-					array_push($attachments_data, $attachment_details);
-				}
+				$attachment_details = array(
+						'id' 				=> $_POST['attachment_id_' . $i],
+						'title' 			=> $_POST['attachment_title_' . $i],
+						'caption' 			=> $_POST['attachment_caption_' . $i],
+						'order' 			=> $_POST['attachment_order_' . $i]
+					);
+				
+				// serialize data and encode
+				$attachment_serialized = base64_encode( serialize( $attachment_details ) );
+				
+				// add individual attachment
+				add_post_meta( $post_id, '_attachments', $attachment_serialized );
 			}
 		}
 		
 	}
 	
-	// Serialization goodness
-	$attachments_serialized = serialize($attachments_data);
-	
-	update_post_meta($post_id, '_attachments', $attachments_serialized);
 }
 
 
@@ -300,34 +312,61 @@ function attachments_save($post_id)
  * @param int $post_id (optional) ID of target Post or Page, otherwise pulls from global $post
  * @return array $post_attachments
  * @author Jonathan Christopher
+ * @author JR Tashjian
  */
-function attachments_get_attachments($post_id=null)
+function attachments_get_attachments( $post_id=null )
 {
 	global $post;
 	
-	if($post_id==null)
+	if( $post_id==null )
 	{
 		$post_id = $post->ID;
 	}
 	
-	$existing_attachments = unserialize(get_post_meta($post_id, '_attachments', true));
+	// get all attachments
+	$existing_attachments = get_post_meta( $post_id, '_attachments', false );
 	
-	if( is_array($existing_attachments) && count($existing_attachments) > 0 )
+	$legacy_existing_attachments = unserialize( $existing_attachments[0] );
+	
+	// Check for legacy attachments
+	if( is_array( $legacy_existing_attachments ) )
+	{
+		$tmp_legacy_attachments = array();
+		
+		// Legacy attachments (single serialized record)
+		foreach ( $legacy_existing_attachments as $legacy_attachment )
+		{
+			array_push( $tmp_legacy_attachments, base64_encode( serialize( $legacy_attachment ) ) );
+		}
+		
+		$existing_attachments = $tmp_legacy_attachments;
+	}
+	
+	// We can now proceed as normal, all legacy data should now be upgraded
+	if( is_array( $existing_attachments ) && count( $existing_attachments ) > 0 )
 	{
 		$post_attachments = array();
-		if( count($existing_attachments) > 1 )
-		{
-			usort($existing_attachments, "cmp");
-		}
+		
 		foreach ($existing_attachments as $attachment)
 		{
-			array_push($post_attachments, array(
-				'id' 			=> $attachment['id'],
-				'mime' 			=> $attachment['mime'],
-				'title' 		=> $attachment['title'],
-				'caption' 		=> $attachment['caption'],
-				'location' 		=> $attachment['location']
+			// decode and unserialize the data
+			$data = unserialize( base64_decode( $attachment ) );
+			
+			array_push( $post_attachments, array(
+				'id' 			=> stripslashes( $data['id'] ),
+				'name' 			=> stripslashes( get_the_title( $data['id'] ) ),
+				'mime' 			=> stripslashes( get_post_mime_type( $data['id'] ) ),
+				'title' 		=> stripslashes( $data['title'] ),
+				'caption' 		=> stripslashes( $data['caption'] ),
+				'location' 		=> stripslashes( wp_get_attachment_url( $data['id'] ) ),
+				'order' 		=> stripslashes( $data['order'] )
 			));
+		}
+		
+		// sort attachments
+		if( count( $post_attachments ) > 1 )
+		{
+			usort( $post_attachments, "attachments_cmp" );
 		}
 	}
 	
@@ -345,9 +384,7 @@ function attachments_get_attachments($post_id=null)
 
 function attachments_init()
 {
-	wp_enqueue_style('shadowbox', WP_PLUGIN_URL . '/attachments/lib/shadowbox/shadowbox.css');
 	wp_enqueue_style('attachments', WP_PLUGIN_URL . '/attachments/css/attachments.css');
-	wp_enqueue_script('shadowbox', WP_PLUGIN_URL . '/attachments/lib/shadowbox/shadowbox.js');
 	wp_enqueue_script('attachments', WP_PLUGIN_URL . '/attachments/js/attachments.js');
 	
 	attachments_meta_box();

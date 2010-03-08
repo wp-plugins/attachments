@@ -15,22 +15,6 @@ function init_attachments_sortable() {
 
 jQuery(document).ready(function() {
 	
-	// Hook our Browse button
-	jQuery('a.browse-attachments').click(function() {
-		jQuery.get(attachments_base + '/media.php', function(data) {
-			attachments_media = data;
-			Shadowbox.open({
-				title: 'Attachments',
-				player: 'html',
-				content: '<div id="attachments-file-list"><p>Available attachments are listed from your <strong>Media Library</strong>. If you need to upload a new attachment, please close this dialog and use the available <strong>Add New</strong> button.</p><p>Select an attachment by clicking its thumbnail. When you\'re done adding attachments, click <strong>Apply</strong></p><p class="attachments-actions"><a href="#" class="attachments-apply button button-highlighted">Apply</a></p><div id="attachments-file-details">' + data + '</div><p class="attachments-actions"><a href="#" class="attachments-apply button button-highlighted">Apply</a></p></div>',
-				width:640,
-				height:444
-			});
-		});
-		return false;
-	});
-	
-	
 	// If there are no attachments, let's hide this thing...
 	if(jQuery('div#attachments-list li').length == 0) {
 		jQuery('#attachments-list').hide();
@@ -73,8 +57,6 @@ jQuery(document).ready(function() {
 		jQuery('a.attachments-selected').each(function() {
 			
 			attachment_name 		= jQuery(this).find('span.attachment-file-name').text();
-			attachment_location 	= jQuery(this).find('span.attachment-file-location').text();
-			attachment_mime			= jQuery(this).find('span.attachment-file-mime').text();
 			attachment_id			= jQuery(this).find('span.attachment-file-id').text();
 			attachment_thumbnail	= jQuery(this).find('span.attachments-thumbnail').html();
 			
@@ -86,9 +68,6 @@ jQuery(document).ready(function() {
 			new_attachments += '<div class="textfield" id="field_attachment_caption_' + attachment_index + '"><label for="attachment_caption_' + attachment_index + '">Caption</label><input type="text" id="attachment_caption_' + attachment_index + '" name="attachment_caption_' + attachment_index + '" value="" size="20" /></div>';
 			new_attachments += '</div>';
 			new_attachments += '<div class="attachments-data">';
-			new_attachments += '<input type="hidden" name="attachment_name_' + attachment_index + '" id="attachment_name_' + attachment_index + '" value="' + attachment_name + '" />';
-			new_attachments += '<input type="hidden" name="attachment_location_' + attachment_index + '" id="attachment_location_' + attachment_index + '" value="' + attachment_location + '" />';
-			new_attachments += '<input type="hidden" name="attachment_mime_' + attachment_index + '" id="attachment_mime_' + attachment_index + '" value="' + attachment_mime + '" />';
 			new_attachments += '<input type="hidden" name="attachment_id_' + attachment_index + '" id="attachment_id_' + attachment_index + '" value="' + attachment_id + '" />';
 			new_attachments += '<input type="hidden" class="attachment_order" name="attachment_order_' + attachment_index + '" id="attachment_order_' + attachment_index + '" value="' + attachment_index + '" />';
 			new_attachments += '</div>';
@@ -98,7 +77,8 @@ jQuery(document).ready(function() {
 			new_attachments += '</li>';
 		});
 		jQuery('div#attachments-list ul').append(new_attachments);
-		Shadowbox.close();
+		tb_remove();
+		attachments_update();
 		
 		if(jQuery('#attachments-list li').length > 0) {
 
@@ -112,6 +92,9 @@ jQuery(document).ready(function() {
 			init_attachments_sortable();
 			
 		}
+		
+		return false;
+		
 	});
 	
 });
