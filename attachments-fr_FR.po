@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Attachments\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2010-03-21 14:50-0500\n"
-"PO-Revision-Date: 2010-03-21 21:23+0100\n"
+"PO-Revision-Date: 2010-03-21 21:32+0100\n"
 "Last-Translator: \n"
 "Language-Team: Jonathan Christopher <jonathandchr@gmail.com>\n"
 "MIME-Version: 1.0\n"
@@ -17,35 +17,33 @@ msgstr ""
 "X-Poedit-SearchPath-0: .\n"
 
 #: attachments.php:97
-#, fuzzy
 msgid "Users can only see their own attachments"
-msgstr "Os usuários só poderão ver seus próprios anexos"
+msgstr "Les utilisateurs pourront seulement voir leurs propres fichiers attachés."
 
 #: attachments.php:102
 msgid "Save"
-msgstr "Salvar"
+msgstr "Enregistrer"
 
 #: attachments.php:137
 msgid "Browse Existing"
-msgstr "Pesquisar os anexos existentes"
+msgstr "Parcourir les fichiers attachés existants"
 
 #: attachments.php:138
 #: media.php:26
-#, fuzzy
 msgid "Add to Media Library"
-msgstr "Adicionar à Biblioteca de Mídia"
+msgstr "Ajouter à la Bibliothèque de Médias"
 
 #: attachments.php:160
 msgid "Delete"
-msgstr "Apagar"
+msgstr "Supprimer"
 
 #: attachments.php:164
 msgid "Title"
-msgstr "Título"
+msgstr "Title"
 
 #: attachments.php:168
 msgid "Caption"
-msgstr "Legenda"
+msgstr "Légende"
 
 #: attachments.php:205
 #: attachments.php:208
@@ -54,45 +52,43 @@ msgstr "Attachments"
 
 #: media.php:26
 msgid "Available attachments are listed from your"
-msgstr "Anexos disponíveis estão listados desde"
+msgstr "Les fichiers attachés disponibles sont listés depuis"
 
 #: media.php:26
-#, fuzzy
 msgid "Media Library"
-msgstr "Biblioteca de Mídia"
+msgstr "Bibliothèque de Médias"
 
 #: media.php:26
 msgid "If you need to upload a new attachment, please close this dialog and use the available"
-msgstr "Se você precisar fazer upload de um novo anexo, por favor feche esta janela e use o disponível"
+msgstr "Si vous avez besoin d'ajouter un nouveau fichier attaché, fermez cette fenêtre et utilisez ceux disponibles"
 
 #: media.php:26
 msgid "button"
-msgstr "botão"
+msgstr "bouton"
 
 #: media.php:27
-#, fuzzy
 msgid "Select/deselect an attachment by clicking its thumbnail. When you're done managing your attachments, click "
-msgstr "Seleccionar / deseleccionar um anexo, clicando em sua miniatura. Quando você terminar de gerenciar seus anexos, clique em"
+msgstr "Sélectionner / déselectionner un fichier attaché, en cliquant sur sa vignette. Quand vous avez terminé de la gestion de vos ficheirs attachés, cliquez sur"
 
 #: media.php:27
 #: media.php:29
 #: media.php:160
 msgid "Apply"
-msgstr "Aplicar"
+msgstr "Valider"
 
 #: media.php:39
 msgid "Images"
-msgstr "Imagens"
+msgstr "Images"
 
 #: media.php:67
 msgid "Videos"
-msgstr "Vídeos"
+msgstr "Vidéos"
 
 #: media.php:99
 msgid "Documents"
-msgstr "Documentos"
+msgstr "Documents"
 
 #: media.php:131
 msgid "Audio"
-msgstr "Áudio"
+msgstr "Audio"
 
