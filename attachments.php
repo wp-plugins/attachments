@@ -3,7 +3,7 @@
 Plugin Name: Attachments
 Plugin URI: http://mondaybynoon.com/wordpress-attachments/
 Description: Attachments gives the ability to append any number of Media Library items to Pages and Posts
-Version: 1.0.7
+Version: 1.0.7.1
 Author: Jonathan Christopher
 Author URI: http://mondaybynoon.com/
 */
@@ -94,12 +94,12 @@ function attachments_options()
 			<?php wp_nonce_field('update-options'); ?>
 			<div style="padding:20px 0 0 0; overflow:hidden; zoom:1;">
 				<input type="checkbox" name="attachments_limit_to_user" style="display:block; float:left; margin-top:2px;" value="true"<?php if (get_option('attachments_limit_to_user')=='true') : ?> checked="checked"<?php endif ?> />
-				<span style="display:block; float:left; padding:0 0 0 7px;">Users can only see their own attachments</span>
+				<span style="display:block; float:left; padding:0 0 0 7px;"><?php _e("Users can only see their own attachments", "attachments");?></span>
 			</div>
 			<input type="hidden" name="action" value="update" />
 			<input type="hidden" name="page_options" value="attachments_limit_to_user" />
 			<p class="submit">
-				<input type="submit" class="button-primary" value="Save" />
+				<input type="submit" class="button-primary" value="<?php _e("Save", "attachments");?>" />
 			</p>
 		</form>
 	</div>
@@ -134,8 +134,8 @@ function attachments_add()
 	<div id="attachments-inner">
 		
 		<ul id="attachments-actions">
-			<li id="attachments-browse"><a href="<?php echo WP_PLUGIN_URL . '/attachments/media.php'; ?>?width=640&amp;height=523" class="button thickbox button-highlighted browse-attachments">Browse Existing</a></li>
-			<li id="attachments-add-new"><a href="media-upload.php?type=image&amp;TB_iframe=true&amp;width=640&amp;height=523" class="button thickbox">Add to Media Library</a></li>
+			<li id="attachments-browse"><a href="<?php echo WP_PLUGIN_URL . '/attachments/media.php'; ?>?width=640&amp;height=523" class="button thickbox button-highlighted browse-attachments"><?php _e("Browse Existing", "attachments")?></a></li>
+			<li id="attachments-add-new"><a href="media-upload.php?type=image&amp;TB_iframe=true&amp;width=640&amp;height=523" class="button thickbox"><?php _e("Add to Media Library", "attachments")?></a></li>
 		</ul>
 		
 		<div id="attachments-list">
@@ -157,15 +157,15 @@ function attachments_add()
 											<span class="attachment-handle-icon"><img src="<?php echo WP_PLUGIN_URL; ?>/attachments/images/handle.gif" alt="Drag" /></span>
 										</a>
 										<span class="attachment-name"><?php echo $attachment['name']; ?></span>
-										<span class="attachment-delete"><a href="#">Delete</a></span>
+										<span class="attachment-delete"><a href="#"><?php _e("Delete", "attachments")?></a></span>
 									</h2>
 									<div class="attachments-fields">
 										<div class="textfield" id="field_attachment_title_<?php echo $attachment_index ; ?>">
-											<label for="attachment_title_<?php echo $attachment_index; ?>">Title</label>
+											<label for="attachment_title_<?php echo $attachment_index; ?>"><?php _e("Title", "attachments")?></label>
 											<input type="text" id="attachment_title_<?php echo $attachment_index; ?>" name="attachment_title_<?php echo $attachment_index; ?>" value="<?php echo $attachment['title']; ?>" size="20" />
 										</div>
 										<div class="textfield" id="field_attachment_caption_<?php echo $attachment_index; ?>">
-											<label for="attachment_caption_<?php echo $attachment_index; ?>">Caption</label>
+											<label for="attachment_caption_<?php echo $attachment_index; ?>"><?php _e("Caption", "attachments")?></label>
 											<input type="text" id="attachment_caption_<?php echo $attachment_index; ?>" name="attachment_caption_<?php echo $attachment_index; ?>" value="<?php echo $attachment['caption']; ?>" size="20" />
 										</div>
 									</div>
@@ -386,6 +386,18 @@ function attachments_init()
 {
 	wp_enqueue_style('attachments', WP_PLUGIN_URL . '/attachments/css/attachments.css');
 	wp_enqueue_script('attachments', WP_PLUGIN_URL . '/attachments/js/attachments.js');
+
+	if( function_exists( 'load_plugin_textdomain' ) )
+	{
+		if( !defined('WP_PLUGIN_DIR') )
+		{
+			load_plugin_textdomain( 'attachments', str_replace( ABSPATH, '', dirname( __FILE__ ) ) );
+		}
+		else
+		{
+			load_plugin_textdomain( 'attachments', false, dirname( plugin_basename( __FILE__ ) ) );
+		}
+	}
 	
 	attachments_meta_box();
 }

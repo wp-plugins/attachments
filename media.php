@@ -1,37 +1,42 @@
-	<div id="attachments-file-list">
-		<p>Available attachments are listed from your <strong>Media Library</strong>. If you need to upload a new attachment, please close this dialog and use the available <strong>Add to Media Library</strong> button.</p>
-		<p>Select/deselect an attachment by clicking its thumbnail. When you're done managing your attachments, click <strong>Apply</strong></p>
+<?php
 
-		<p class="attachments-actions"><a href="#" class="attachments-apply button button-highlighted">Apply</a></p>
+	error_reporting(0);
+	require( dirname(__FILE__) . '/../../../wp-config.php' );
+
+	global $wpdb;
+	global $userdata;
+
+	// set the user info in case we need to limit to the current author
+	get_currentuserinfo();
+
+	if( get_option('attachments_limit_to_user') == 'true' )
+	{
+		$attachments_sql = "SELECT * FROM $wpdb->posts WHERE post_type = 'attachment' AND post_author = " . $userdata->ID . " ORDER BY post_modified DESC";
+	}
+	else
+	{
+		$attachments_sql = "SELECT * FROM $wpdb->posts WHERE post_type = 'attachment' ORDER BY post_modified DESC";
+	}
+
+	$attachment_files = $wpdb->get_results( $attachments_sql );
+
+?>
+
+	<div id="attachments-file-list">
+		<p><?php _e("Available attachments are listed from your", "attachments"); ?> <strong><?php _e("Media Library", "attachments"); ?></strong>. <?php _e("If you need to upload a new attachment, please close this dialog and use the available", "attachments"); ?> <strong><?php _e("Add to Media Library", "attachments"); ?></strong> <?php _e("button", "attachments"); ?></p>
+		<p><?php _e("Select/deselect an attachment by clicking its thumbnail. When you're done managing your attachments, click ", "attachments")?><strong><?php _e("Apply", "attachments")?></strong></p>
+
+		<p class="attachments-actions"><a href="#" class="attachments-apply button button-highlighted"><?php _e("Apply", "attachments"); ?></a></p>
 
 		<div id="attachments-file-details">
 
 			<?php
-			error_reporting(0);
-			require( dirname(__FILE__) . '/../../../wp-config.php' );
-
-			global $wpdb;
-			global $userdata;
-
-			// set the user info in case we need to limit to the current author
-			get_currentuserinfo();
-
-			if( get_option('attachments_limit_to_user') == 'true' )
-			{
-				$attachments_sql = "SELECT * FROM $wpdb->posts WHERE post_type = 'attachment' AND post_author = " . $userdata->ID . " ORDER BY post_modified DESC";
-			}
-			else
-			{
-				$attachments_sql = "SELECT * FROM $wpdb->posts WHERE post_type = 'attachment' ORDER BY post_modified DESC";
-			}
-
-			$attachment_files = $wpdb->get_results( $attachments_sql );
 
 			// ================
 			// = IMAGES FIRST =
 			// ================
 			echo '<div class="attachments-file-section attachments-images">';
-			echo '<h2>Images</h2>';
+			echo '<h2>' . __("Images", "attachments") . '</h2>';
 			echo '<ul>';
 			foreach ($attachment_files as $post)
 			{
@@ -59,7 +64,7 @@
 			// = VIDEOS =
 			// ==========
 			echo '<div class="attachments-file-section attachments-alt attachments-videos">';
-			echo '<h2>Videos</h2>';
+			echo '<h2>' . __("Videos", "attachments") . '</h2>';
 			echo '<ul>';
 			foreach ($attachment_files as $post)
 			{
@@ -91,7 +96,7 @@
 			// = DOCUMENTS =
 			// =============
 			echo '<div class="attachments-file-section attachments-alt attachments-documents">';
-			echo '<h2>Documents</h2>';
+			echo '<h2>' . __("Documents", "attachments") . '</h2>';
 			echo '<ul>';
 			foreach ($attachment_files as $post)
 			{
@@ -123,7 +128,7 @@
 			// = AUDIO =
 			// =========
 			echo '<div class="attachments-file-section attachments-alt attachments-audio">';
-			echo '<h2>Audio</h2>';
+			echo '<h2>' . __("Audio", "attachments") . '</h2>';
 			echo '<ul>';
 			foreach ($attachment_files as $post)
 			{
@@ -152,6 +157,6 @@
 
 	</div>
 
-	<p class="attachments-actions"><a href="#" class="attachments-apply button button-highlighted">Apply</a></p>
+	<p class="attachments-actions"><a href="#" class="attachments-apply button button-highlighted"><?php _e("Apply", "attachments"); ?></a></p>
 
 	</div>
