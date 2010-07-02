@@ -1,0 +1,98 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Attachments\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-03-21 14:50-0500\n"
+"PO-Revision-Date: 2010-03-21 21:23+0100\n"
+"Last-Translator: \n"
+"Language-Team: Jonathan Christopher <jonathandchr@gmail.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-KeywordsList: _e;__\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-Language: Portuguese\n"
+"X-Poedit-Country: BRAZIL\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-SearchPath-0: .\n"
+
+#: attachments.php:97
+#, fuzzy
+msgid "Users can only see their own attachments"
+msgstr "Os usuários só poderão ver seus próprios anexos"
+
+#: attachments.php:102
+msgid "Save"
+msgstr "Salvar"
+
+#: attachments.php:137
+msgid "Browse Existing"
+msgstr "Pesquisar os anexos existentes"
+
+#: attachments.php:138
+#: media.php:26
+#, fuzzy
+msgid "Add to Media Library"
+msgstr "Adicionar à Biblioteca de Mídia"
+
+#: attachments.php:160
+msgid "Delete"
+msgstr "Apagar"
+
+#: attachments.php:164
+msgid "Title"
+msgstr "Título"
+
+#: attachments.php:168
+msgid "Caption"
+msgstr "Legenda"
+
+#: attachments.php:205
+#: attachments.php:208
+msgid "Attachments"
+msgstr "Attachments"
+
+#: media.php:26
+msgid "Available attachments are listed from your"
+msgstr "Anexos disponíveis estão listados desde"
+
+#: media.php:26
+#, fuzzy
+msgid "Media Library"
+msgstr "Biblioteca de Mídia"
+
+#: media.php:26
+msgid "If you need to upload a new attachment, please close this dialog and use the available"
+msgstr "Se você precisar fazer upload de um novo anexo, por favor feche esta janela e use o disponível"
+
+#: media.php:26
+msgid "button"
+msgstr "botão"
+
+#: media.php:27
+#, fuzzy
+msgid "Select/deselect an attachment by clicking its thumbnail. When you're done managing your attachments, click "
+msgstr "Seleccionar / deseleccionar um anexo, clicando em sua miniatura. Quando você terminar de gerenciar seus anexos, clique em"
+
+#: media.php:27
+#: media.php:29
+#: media.php:160
+msgid "Apply"
+msgstr "Aplicar"
+
+#: media.php:39
+msgid "Images"
+msgstr "Imagens"
+
+#: media.php:67
+msgid "Videos"
+msgstr "Vídeos"
+
+#: media.php:99
+msgid "Documents"
+msgstr "Documentos"
+
+#: media.php:131
+msgid "Audio"
+msgstr "Áudio"
+
