@@ -26,7 +26,7 @@ jQuery(document).ready(function() {
 		
 	
 	// Keep track of our browse dialog selections
-	jQuery('#attachments-file-details li a').live('click', function() {
+	jQuery('.attachments a').live('click', function() {
 		jQuery(this).toggleClass('attachments-selected');
 		return false;
 	});

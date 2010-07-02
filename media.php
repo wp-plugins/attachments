@@ -23,140 +23,116 @@
 ?>
 
 	<div id="attachments-file-list">
-		<p><?php _e("Available attachments are listed from your", "attachments"); ?> <strong><?php _e("Media Library", "attachments"); ?></strong>. <?php _e("If you need to upload a new attachment, please close this dialog and use the available", "attachments"); ?> <strong><?php _e("Add to Media Library", "attachments"); ?></strong> <?php _e("button", "attachments"); ?></p>
-		<p><?php _e("Select/deselect an attachment by clicking its thumbnail. When you're done managing your attachments, click ", "attachments")?><strong><?php _e("Apply", "attachments")?></strong></p>
+		
+		<p><?php _e("Available attachments are listed from your <strong>Media Library</strong>. If you need to upload a new attachment, please close this dialog and use the available <strong>Add to Media Library</strong> button.", "attachments"); ?> <?php _e("Select/deselect an attachment by clicking its thumbnail. When you're done managing your attachments, click <strong>Apply</strong>.", "attachments")?></p>
 
 		<p class="attachments-actions"><a href="#" class="attachments-apply button button-highlighted"><?php _e("Apply", "attachments"); ?></a></p>
 
-		<div id="attachments-file-details">
+		
+		<?php
+		
+			$attachments_attachment_types = array(
 
-			<?php
-
-			// ================
-			// = IMAGES FIRST =
-			// ================
-			echo '<div class="attachments-file-section attachments-images">';
-			echo '<h2>' . __("Images", "attachments") . '</h2>';
-			echo '<ul>';
-			foreach ($attachment_files as $post)
-			{
-				if ( strpos($post->post_mime_type, 'image') !== false )
-				{
-					echo '<li>';
-					echo '<a href="#">';
-					echo '<span class="attachments-data">';
-					echo '<span class="attachment-file-name">' . $post->post_name . '</span>';
-					echo '<span class="attachment-file-id">' . $post->ID . '</span>';
-					echo '</span>';
-					echo '<span class="attachments-thumbnail">';
-					echo wp_get_attachment_image( $post->ID, array(80, 60), true );
-					echo '</span>';
-					echo '</a>';
-					echo '</li>';
-				}
-			}
-			echo '</ul>';
-			echo '</div>';
-
-
-
-			// ==========
-			// = VIDEOS =
-			// ==========
-			echo '<div class="attachments-file-section attachments-alt attachments-videos">';
-			echo '<h2>' . __("Videos", "attachments") . '</h2>';
-			echo '<ul>';
-			foreach ($attachment_files as $post)
-			{
-				if ( strpos($post->post_mime_type, 'video') !== false )
-				{
-					echo '<li>';
-					echo '<a href="#">';
-					echo '<span class="attachments-data">';
-					echo '<span class="attachment-file-name">' . $post->post_name . '</span>';
-					echo '<span class="attachment-file-id">' . $post->ID . '</span>';
-					echo '</span>';
-					echo '<span class="attachments-thumbnail">';
-					echo wp_get_attachment_image( $post->ID, array(80, 60), true );
-					echo '</span>';
-					echo '<h2 class="attachments-title-display">';
-					echo $post->post_name;
-					echo '</h2>';
-					echo '</a>';
-					echo '</li>';
-				}
-			}
-			echo '</ul>';
-			echo '</div>';
-
-
-
-
-			// =============
-			// = DOCUMENTS =
-			// =============
-			echo '<div class="attachments-file-section attachments-alt attachments-documents">';
-			echo '<h2>' . __("Documents", "attachments") . '</h2>';
-			echo '<ul>';
-			foreach ($attachment_files as $post)
-			{
-				if ( strpos($post->post_mime_type, 'application') !== false )
-				{
-					echo '<li>';
-					echo '<a href="#">';
-					echo '<span class="attachments-data">';
-					echo '<span class="attachment-file-name">' . $post->post_name . '</span>';
-					echo '<span class="attachment-file-id">' . $post->ID . '</span>';
-					echo '</span>';
-					echo '<span class="attachments-thumbnail">';
-					echo wp_get_attachment_image( $post->ID, array(80, 60), true );
-					echo '</span>';
-					echo '<h2 class="attachments-title-display">';
-					echo $post->post_name;
-					echo '</h2>';
-					echo '</a>';
-					echo '</li>';
-				}
-			}
-			echo '</ul>';
-			echo '</div>';
-
-
-
-
-			// =========
-			// = AUDIO =
-			// =========
-			echo '<div class="attachments-file-section attachments-alt attachments-audio">';
-			echo '<h2>' . __("Audio", "attachments") . '</h2>';
-			echo '<ul>';
-			foreach ($attachment_files as $post)
-			{
-				if ( strpos($post->post_mime_type, 'audio') !== false )
-				{
-					echo '<li>';
-					echo '<a href="#">';
-					echo '<span class="attachments-data">';
-					echo '<span class="attachment-file-name">' . $post->post_name . '</span>';
-					echo '<span class="attachment-file-id">' . $post->ID . '</span>';
-					echo '</span>';
-					echo '<span class="attachments-thumbnail">';
-					echo wp_get_attachment_image( $post->ID, array(80, 60), true );
-					echo '</span>';
-					echo '<h2 class="attachments-title-display">';
-					echo $post->post_name;
-					echo '</h2>';
-					echo '</a>';
-					echo '</li>';
-				}
-			}
-			echo '</ul>';
-			echo '</div>';
-
+					array(
+						'name' => 'Images',
+						'mime' => 'image',
+					),
+					array(
+						'name' => 'Videos',
+						'mime' => 'video'
+					),
+					array(
+						'name' => 'Documents',
+						'mime' => 'application'
+					),
+					array(
+						'name' => 'Audio',
+						'mime' => 'audio'
+					),
+				
+				);
+		
 		?>
 
-	</div>
 
-	<p class="attachments-actions"><a href="#" class="attachments-apply button button-highlighted"><?php _e("Apply", "attachments"); ?></a></p>
+		<div id="attachments-tabs">
+			
+			<ul class="subsubsub">
+				<?php $attachments_total_types = count( $attachments_attachment_types ); ?>
+				<?php for($attachments_index=0; $attachments_index < $attachments_total_types; $attachments_index++) : ?>
+					<li>
+						<a href="#attachments-<?php echo $attachments_attachment_types[$attachments_index]['mime']; ?>">
+							<?php echo $attachments_attachment_types[$attachments_index]['name']; ?>
+						</a>
+					</li>
+					<?php if( $attachments_index < $attachments_total_types - 1 ) : ?> |<?php endif ?>
+				<?php endfor ?>
+				
+			</ul>
+			
+			<br class="clear" />
+			
+			<div id="attachments-file-details">
+				
+				<?php foreach ( $attachments_attachment_types as $attachments_attachment_type ) : ?>
+					<div class="attachments attachments-file-section attachments-<?php echo $attachments_attachment_type['mime']; ?>" id="attachments-<?php echo $attachments_attachment_type['mime']; ?>">
+
+						<h2><?php echo __($attachments_attachment_type['name'], "attachments"); ?></h2>
+
+						<table class="widefat fixed" cellpadding="0">
+							<thead>
+								<tr>
+									<th scope="col" id="icon" class="manage-column column-icon">Icon</th>
+									<th scope="col" id="media" class="manage-column column-media">File</th>
+								</tr>
+							</thead>
+							<tfoot>
+								<tr>
+									<th scope="col" id="icon" class="manage-column column-icon">Icon</th>
+									<th scope="col" id="media" class="manage-column column-media">File</th>
+								</tr>
+							</tfoot>
+							<tbody>
+								<?php foreach ($attachment_files as $post) : if ( strpos($post->post_mime_type, $attachments_attachment_type['mime']) !== false ) : ?>
+									<tr class="author-other status-inherit" valign="top">
+										<td class="column-icon media-icon">
+											<a href="#">
+												<span class="attachments-thumbnail">
+													<?php echo wp_get_attachment_image( $post->ID, array(80, 60), true ); ?>
+												</span>
+												<span class="attachments-data">
+													<span class="attachment-file-name">
+														<?php echo $post->post_name; ?>
+													</span>
+													<span class="attachment-file-id">
+														<?php echo $post->ID; ?>
+													</span>
+												</span>
+											</a>
+										</td>
+										<td class="media column-media">
+											<p><?php echo $post->post_name; ?></p>
+										</td>
+									</tr>
+								<?php endif; endforeach; ?>
+							</tbody>
+						</table>
+						
+					</div>
+					<!-- /attachments-<?php echo $attachments_attachment_type['name']; ?> -->
+				<?php endforeach ?>
+		
+			</div>
+			<!-- /attachments-file-details -->
+			
+		</div>
+		<!-- /attachments-tabs -->
+
+		<p class="attachments-actions"><a href="#" class="attachments-apply button button-highlighted"><?php _e("Apply", "attachments"); ?></a></p>
 
 	</div>
+	<!-- /attachments-file-list -->
+	
+	<script type="text/javascript" charset="utf-8">
+		jQuery('#attachments-tabs').tabs();
+	</script>

@@ -3,7 +3,7 @@
 Plugin Name: Attachments
 Plugin URI: http://mondaybynoon.com/wordpress-attachments/
 Description: Attachments gives the ability to append any number of Media Library items to Pages and Posts
-Version: 1.0.7.2
+Version: 1.0.8
 Author: Jonathan Christopher
 Author URI: http://mondaybynoon.com/
 */
@@ -134,8 +134,16 @@ function attachments_add()
 	<div id="attachments-inner">
 		
 		<ul id="attachments-actions">
-			<li id="attachments-browse"><a href="<?php echo WP_PLUGIN_URL . '/attachments/media.php'; ?>?width=640&amp;height=523" class="button thickbox button-highlighted browse-attachments"><?php _e("Browse Existing", "attachments")?></a></li>
-			<li id="attachments-add-new"><a href="media-upload.php?type=image&amp;TB_iframe=true&amp;width=640&amp;height=523" class="button thickbox"><?php _e("Add to Media Library", "attachments")?></a></li>
+			<li id="attachments-browse">
+				<a href="<?php echo WP_PLUGIN_URL . '/attachments/media.php'; ?>?width=640&amp;height=600" class="button thickbox button-highlighted browse-attachments">
+					<?php _e("Browse Existing", "attachments")?>
+				</a>
+			</li>
+			<li id="attachments-add-new">
+				<a href="media-upload.php?type=image&amp;TB_iframe=true&amp;width=640&amp;height=600" class="button thickbox">
+					<?php _e("Add to Media Library", "attachments")?>
+				</a>
+			</li>
 		</ul>
 		
 		<div id="attachments-list">
@@ -175,7 +183,7 @@ function attachments_add()
 									</div>
 									<div class="attachment-thumbnail">
 										<span class="attachments-thumbnail">
-											<?php echo wp_get_attachment_image( $attachment['id'], array(80, 60), true ); ?>
+											<?php echo wp_get_attachment_image( $attachment['id'], array(80, 60), 1 ); ?>
 										</span>
 									</div>
 								</li>
@@ -384,6 +392,8 @@ function attachments_get_attachments( $post_id=null )
 
 function attachments_init()
 {
+	wp_enqueue_script('jquery-ui-core');
+	wp_enqueue_script('jquery-ui-tabs');
 	wp_enqueue_style('attachments', WP_PLUGIN_URL . '/attachments/css/attachments.css');
 	wp_enqueue_script('attachments', WP_PLUGIN_URL . '/attachments/js/attachments.js');
 

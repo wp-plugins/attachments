@@ -3,8 +3,8 @@ Contributors: jchristopher
 Donate link: http://mondaybynoon.com/donate/
 Tags: post, page, posts, pages, images, PDF, doc, Word, image, jpg, jpeg, picture, pictures, photos, attachment
 Requires at least: 2.8
-Tested up to: 2.9.2
-Stable tag: 1.0.7.2
+Tested up to: 3.0
+Stable tag: 1.0.8
 
 Attachments allows you to append any number of items from your WordPress Media Library to Posts and Pages
 
@@ -41,8 +41,12 @@ Attachments uses WordPress' built in Media library for uploads and storage.
 
 == Changelog ==
 
+= 1.0.8 =
+* Fixed possible bug with images not thumbnailing properly
+* Tabbed media browsing implemented
+
 = 1.0.7.2 =
-* Revised Portuguese Translation
+* Revised Portuguese Translation by [Nicolas Mollet](www.nicolasmollet.com)
 * Added French Translation
 
 = 1.0.7.1 =
@@ -76,6 +80,9 @@ Attachments uses WordPress' built in Media library for uploads and storage.
 * First stable release
 
 == Upgrade Notice ==
+
+= 1.0.8 =
+As always, be sure to back up your database and files before upgrading.
 
 = 1.0.7 =
 Attachments are now stored in such a way that removes an in-place limitation on string lengths for both titles and captions.
