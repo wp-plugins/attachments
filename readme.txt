@@ -43,14 +43,14 @@ Attachments uses WordPress' built in Media library for uploads and storage.
 
 = 1.0.9 =
 * Support for Custom Post Types (found in Settings)
-* Revised Portuguese Translation by [Miriam de Paula](www.tecsite.com.br)
+* Revised Portuguese Translation by [Miriam de Paula](http://www.tecsite.com.br)
 
 = 1.0.8 =
 * Fixed possible bug with images not thumbnailing properly
 * Tabbed media browsing implemented
 
 = 1.0.7.2 =
-* Revised Portuguese Translation by [Nicolas Mollet](www.nicolasmollet.com)
+* Revised Portuguese Translation by [Nicolas Mollet](http://www.nicolasmollet.com)
 * Added French Translation
 
 = 1.0.7.1 =
