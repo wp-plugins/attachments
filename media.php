@@ -1,6 +1,7 @@
 <?php
 
 	error_reporting(0);
+	require_once(dirname(__FILE__) . '/../../../wp-admin/admin.php');
 	require( dirname(__FILE__) . '/../../../wp-config.php' );
 
 	global $wpdb;

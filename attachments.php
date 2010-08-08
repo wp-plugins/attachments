@@ -3,7 +3,7 @@
 Plugin Name: Attachments
 Plugin URI: http://mondaybynoon.com/wordpress-attachments/
 Description: Attachments gives the ability to append any number of Media Library items to Pages and Posts
-Version: 1.0.8
+Version: 1.0.9
 Author: Jonathan Christopher
 Author URI: http://mondaybynoon.com/
 */
@@ -86,24 +86,9 @@ function attachments_cmp($a, $b)
  * @author Jonathan Christopher
  */
 function attachments_options()
-{ ?>
-	<div class="wrap">
-		<div id="icon-options-general" class="icon32"><br /></div>
-		<h2>Attachments Options</h2>
-		<form action="options.php" method="post">
-			<?php wp_nonce_field('update-options'); ?>
-			<div style="padding:20px 0 0 0; overflow:hidden; zoom:1;">
-				<input type="checkbox" name="attachments_limit_to_user" style="display:block; float:left; margin-top:2px;" value="true"<?php if (get_option('attachments_limit_to_user')=='true') : ?> checked="checked"<?php endif ?> />
-				<span style="display:block; float:left; padding:0 0 0 7px;"><?php _e("Users can only see their own attachments", "attachments");?></span>
-			</div>
-			<input type="hidden" name="action" value="update" />
-			<input type="hidden" name="page_options" value="attachments_limit_to_user" />
-			<p class="submit">
-				<input type="submit" class="button-primary" value="<?php _e("Save", "attachments");?>" />
-			</p>
-		</form>
-	</div>
-<?php }
+{
+	include 'attachments.options.php';
+}
 
 
 
@@ -214,6 +199,22 @@ function attachments_meta_box()
 	
 	// for pages
 	add_meta_box( 'attachments_list', __( 'Attachments', 'attachments_textdomain' ), 'attachments_add', 'page', 'normal' );
+	
+	// for custom post types
+	if( function_exists( 'get_post_types' ) )
+	{
+		$args = array(
+			'public'   => true,
+			'_builtin' => false
+			); 
+		$output = 'objects';
+		$operator = 'and';
+		$post_types = get_post_types( $args, $output, $operator );
+		foreach($post_types as $post_type)
+		{
+			add_meta_box( 'attachments_list', __( 'Attachments', 'attachments_textdomain' ), 'attachments_add', $post_type->name, 'normal' );
+		}
+	}
 }
 
 
