@@ -4,7 +4,7 @@ Donate link: http://mondaybynoon.com/donate/
 Tags: post, page, posts, pages, images, PDF, doc, Word, image, jpg, jpeg, picture, pictures, photos, attachment
 Requires at least: 2.8
 Tested up to: 3.0.1
-Stable tag: 1.0.9
+Stable tag: 1.1
 
 Attachments allows you to append any number of items from your WordPress Media Library to Posts and Pages
 
@@ -40,6 +40,11 @@ Attachments uses WordPress' built in Media library for uploads and storage.
 1. Attachments meta box on every Post and Page
 
 == Changelog ==
+
+= 1.1 =
+* Fixed a bug where Attachments meta box would display on Custom Post Types even when set not to
+* Fixed a bug where special characters were lost on save
+* Fixed a bug where Browse/Add buttons failed to work when an Editor was not available on a Custom Post Type
 
 = 1.0.9 =
 * Support for Custom Post Types (found in Settings)

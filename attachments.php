@@ -3,7 +3,7 @@
 Plugin Name: Attachments
 Plugin URI: http://mondaybynoon.com/wordpress-attachments/
 Description: Attachments gives the ability to append any number of Media Library items to Pages and Posts
-Version: 1.0.9
+Version: 1.1
 Author: Jonathan Christopher
 Author URI: http://mondaybynoon.com/
 */
@@ -212,7 +212,10 @@ function attachments_meta_box()
 		$post_types = get_post_types( $args, $output, $operator );
 		foreach($post_types as $post_type)
 		{
-			add_meta_box( 'attachments_list', __( 'Attachments', 'attachments_textdomain' ), 'attachments_add', $post_type->name, 'normal' );
+			if (get_option('attachments_cpt_' . $post_type->name)=='true')
+			{
+				add_meta_box( 'attachments_list', __( 'Attachments', 'attachments_textdomain' ), 'attachments_add', $post_type->name, 'normal' );
+			}
 		}
 	}
 }
@@ -296,8 +299,8 @@ function attachments_save($post_id)
 			{
 				$attachment_details = array(
 						'id' 				=> $_POST['attachment_id_' . $i],
-						'title' 			=> $_POST['attachment_title_' . $i],
-						'caption' 			=> $_POST['attachment_caption_' . $i],
+						'title' 			=> htmlentities( $_POST['attachment_title_' . $i] ),
+						'caption' 			=> htmlentities( $_POST['attachment_caption_' . $i] ),
 						'order' 			=> $_POST['attachment_order_' . $i]
 					);
 				
@@ -395,6 +398,8 @@ function attachments_init()
 {
 	wp_enqueue_script('jquery-ui-core');
 	wp_enqueue_script('jquery-ui-tabs');
+	wp_enqueue_script('thickbox');
+	wp_enqueue_style('thickbox');
 	wp_enqueue_style('attachments', WP_PLUGIN_URL . '/attachments/css/attachments.css');
 	wp_enqueue_script('attachments', WP_PLUGIN_URL . '/attachments/js/attachments.js');
 
