@@ -25,11 +25,8 @@
 
 	<div id="attachments-file-list">
 		
-		<p><?php _e("Available attachments are listed from your <strong>Media Library</strong>. If you need to upload a new attachment, please close this dialog and use the available <strong>Add to Media Library</strong> button.", "attachments"); ?> <?php _e("Select/deselect an attachment by clicking its thumbnail. When you're done managing your attachments, click <strong>Apply</strong>.", "attachments")?></p>
+		<p id="attachments-instructions"><?php _e("Available attachments are listed from your <strong>Media Library</strong>. If you need to upload a new attachment, please close this dialog and use the available <strong>Add to Media Library</strong> button.", "attachments"); ?> <?php _e("Select/deselect an attachment by clicking its thumbnail. When you're done managing your attachments, click <strong>Attach</strong>.", "attachments")?></p>
 
-		<p class="attachments-actions"><a href="#" class="attachments-apply button button-highlighted"><?php _e("Apply", "attachments"); ?></a></p>
-
-		
 		<?php
 		
 			$attachments_attachment_types = array(
@@ -60,25 +57,25 @@
 			
 			<ul class="subsubsub">
 				<?php $attachments_total_types = count( $attachments_attachment_types ); ?>
-				<?php for($attachments_index=0; $attachments_index < $attachments_total_types; $attachments_index++) : ?>
+				<?php for( $attachments_index=0; $attachments_index < $attachments_total_types; $attachments_index++ ) : ?>
 					<li>
-						<a href="#attachments-<?php echo $attachments_attachment_types[$attachments_index]['mime']; ?>">
+						<a<?php if( $attachments_index == 0 ) : ?> class="current" <?php endif ?> href="#attachments-<?php echo $attachments_attachment_types[$attachments_index]['mime']; ?>">
 							<?php echo $attachments_attachment_types[$attachments_index]['name']; ?>
 						</a>
 					</li>
-					<?php if( $attachments_index < $attachments_total_types - 1 ) : ?> |<?php endif ?>
 				<?php endfor ?>
-				
 			</ul>
 			
-			<br class="clear" />
+			<p class="attachments-actions"><a href="#" class="attachments-apply button button-highlighted"><?php _e("Attach", "attachments"); ?></a></p>
+			
+			<p class="clear" id="attachments-live-filter"><input type="text" value="" /></p>
 			
 			<div id="attachments-file-details">
 				
 				<?php foreach ( $attachments_attachment_types as $attachments_attachment_type ) : ?>
 					<div class="attachments attachments-file-section attachments-<?php echo $attachments_attachment_type['mime']; ?>" id="attachments-<?php echo $attachments_attachment_type['mime']; ?>">
 
-						<h2><?php echo __($attachments_attachment_type['name'], "attachments"); ?></h2>
+						<!-- <h2><?php echo __($attachments_attachment_type['name'], "attachments"); ?></h2> -->
 
 						<table class="widefat fixed" cellpadding="0">
 							<thead>
@@ -111,8 +108,8 @@
 												</span>
 											</a>
 										</td>
-										<td class="media column-media">
-											<p><?php echo $post->post_name; ?></p>
+										<td class="media column-media attachment-title">
+											<?php echo $post->post_name; ?>
 										</td>
 									</tr>
 								<?php endif; endforeach; ?>
@@ -129,11 +126,19 @@
 		</div>
 		<!-- /attachments-tabs -->
 
-		<p class="attachments-actions"><a href="#" class="attachments-apply button button-highlighted"><?php _e("Apply", "attachments"); ?></a></p>
-
 	</div>
 	<!-- /attachments-file-list -->
 	
 	<script type="text/javascript" charset="utf-8">
-		jQuery('#attachments-tabs').tabs();
+		jQuery('#attachments-tabs').tabs({
+			selected: 0,
+			select: function(event, ui){
+				jQuery('#attachments-tabs .current').removeClass('current');
+				jQuery('#attachments-tabs li:eq(' + ui.index + ') a').addClass('current');
+			}
+		});
+	</script>
+	
+	<script type="text/javascript" charset="utf-8">
+		jQuery('#attachments-live-filter input').liveUpdate('.attachments table tbody tr td.attachment-title')
 	</script>

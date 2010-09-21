@@ -6,10 +6,11 @@ ul#attachments-actions { overflow:hidden; zoom:1; padding-top:4px; }
 ul#attachments-actions li { width:50%; float:left; }
 li#attachments-add-new { float:right; text-align:right; }
 
+#attachments-instructions { background:#fff; margin:0; padding:12px 0 !important; }
 
-#attachments-file-list { padding:0 10px 15px 10px; background:#fff; }
+#attachments-file-list { padding:0; background:#fff; }
 .attachments-file-section { padding:0 0 20px 0; }
-p.attachments-actions { padding:10px 0; }
+p.attachments-actions { float:right; margin:6px 0 0 !important; }
 
 #attachments-file-details .attachments img { display:block; }
 #attachments-file-details .attachments a { display:block; border:3px solid #fff; float:left; }
@@ -58,3 +59,9 @@ p.attachments-actions { padding:10px 0; }
 .attachments_checkbox { overflow:hidden; zoom:1; padding:0 0 7px 0; }
 .attachments_checkbox input { display:block; float:left; margin-top:2px; }
 .attachments_checkbox label { display:block; float:left; padding:0 0 0 7px; }
+
+#attachments-tabs .subsubsub { float:left; }
+#attachments-tabs .subsubsub a { color:#21759b !important; }
+#attachments-tabs-wrapper { border-bottom:1px solid #dfdfdf; position:relative; }
+#attachments-tabs #sidemenu { overflow:hidden; zoom:1; background:#f9f9f9; float:none !important; margin:0; }
+#attachments-live-filter { display:block; width:140px; float:left; margin:0 0 10px; }

@@ -2,8 +2,8 @@
 /*
 Plugin Name: Attachments
 Plugin URI: http://mondaybynoon.com/wordpress-attachments/
-Description: Attachments gives the ability to append any number of Media Library items to Pages and Posts
-Version: 1.1
+Description: Attachments gives the ability to append any number of Media Library items to Pages, Posts, and Custom Post Types
+Version: 1.1.1
 Author: Jonathan Christopher
 Author URI: http://mondaybynoon.com/
 */
@@ -120,7 +120,7 @@ function attachments_add()
 		
 		<ul id="attachments-actions">
 			<li id="attachments-browse">
-				<a href="<?php echo WP_PLUGIN_URL . '/attachments/media.php'; ?>?width=640&amp;height=600" class="button thickbox button-highlighted browse-attachments">
+				<a href="<?php echo WP_PLUGIN_URL . '/attachments/media.php'; ?>?width=640&amp;height=600" title="Attachments" class="button thickbox button-highlighted browse-attachments">
 					<?php _e("Browse Existing", "attachments")?>
 				</a>
 			</li>
@@ -299,8 +299,8 @@ function attachments_save($post_id)
 			{
 				$attachment_details = array(
 						'id' 				=> $_POST['attachment_id_' . $i],
-						'title' 			=> htmlentities( $_POST['attachment_title_' . $i] ),
-						'caption' 			=> htmlentities( $_POST['attachment_caption_' . $i] ),
+						'title' 			=> str_replace( '"', '&quot;', $_POST['attachment_title_' . $i] ),
+						'caption' 			=> str_replace( '"', '&quot;', $_POST['attachment_caption_' . $i] ),
 						'order' 			=> $_POST['attachment_order_' . $i]
 					);
 				
