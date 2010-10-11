@@ -3,7 +3,7 @@
 Plugin Name: Attachments
 Plugin URI: http://mondaybynoon.com/wordpress-attachments/
 Description: Attachments gives the ability to append any number of Media Library items to Pages, Posts, and Custom Post Types
-Version: 1.1.1
+Version: 1.5
 Author: Jonathan Christopher
 Author URI: http://mondaybynoon.com/
 */
@@ -37,11 +37,14 @@ global $wpdb;
 // =========
 // = HOOKS =
 // =========
-
-add_action('admin_menu', 'attachments_init');
-add_action('admin_head', 'attachments_init_js');
-add_action('save_post', 'attachments_save');
-add_action('admin_menu', 'attachments_menu');
+if( WP_ADMIN )
+{
+	add_action( 'admin_menu', 'attachments_init' );
+	add_action( 'admin_head', 'attachments_init_js' );
+	add_action( 'save_post',  'attachments_save' );
+	add_action( 'admin_menu', 'attachments_menu' );
+	add_action( 'admin_init', 'fix_async_upload_image' );
+}
 
 
 
@@ -118,15 +121,15 @@ function attachments_add()
 	
 	<div id="attachments-inner">
 		
+		<?php
+			$media_upload_iframe_src = "media-upload.php?type=image&TB_iframe=1";
+			$image_upload_iframe_src = apply_filters( 'image_upload_iframe_src', "$media_upload_iframe_src" );
+		?>
+		
 		<ul id="attachments-actions">
-			<li id="attachments-browse">
-				<a href="<?php echo WP_PLUGIN_URL . '/attachments/media.php'; ?>?width=640&amp;height=600" title="Attachments" class="button thickbox button-highlighted browse-attachments">
-					<?php _e("Browse Existing", "attachments")?>
-				</a>
-			</li>
-			<li id="attachments-add-new">
-				<a href="media-upload.php?type=image&amp;TB_iframe=true&amp;width=640&amp;height=600" class="button thickbox">
-					<?php _e("Add to Media Library", "attachments")?>
+			<li>
+				<a id="attachments-thickbox" href="<?php echo $image_upload_iframe_src; ?>&attachments_thickbox=1" title="Attachments" class="button button-highlighted">
+					Attach
 				</a>
 			</li>
 		</ul>
@@ -230,9 +233,27 @@ function attachments_meta_box()
  */
 function attachments_init_js()
 {
+	global $pagenow;
+	
 	echo '<script type="text/javascript" charset="utf-8">';
 	echo '	var attachments_base = "' . WP_PLUGIN_URL . '/attachments"; ';
 	echo '	var attachments_media = ""; ';
+	if ( 'media-upload.php' == $pagenow || 'async-upload.php' == $pagenow )
+	{
+		echo '	var attachments_upload = true; ';
+	}
+	else
+	{
+		echo '	var attachments_upload = false; ';
+	}
+	if( ( 'media-upload.php' == $pagenow || 'async-upload.php' == $pagenow ) && is_attachments_context() )
+	{
+		echo '	var attachments_is_attachments_context = true; ';
+	}
+	else
+	{
+		echo '	var attachments_is_attachments_context = false; ';
+	}
 	echo '</script>';
 }
 
@@ -386,6 +407,42 @@ function attachments_get_attachments( $post_id=null )
 }
 
 
+if( !function_exists( 'fix_async_upload_image' ) )
+{
+	function fix_async_upload_image() {
+		if( isset( $_REQUEST['attachment_id'] ) )
+		{
+			$GLOBALS['post'] = get_post( $_REQUEST['attachment_id'] );
+		}
+	}
+}
+
+function is_attachments_context()
+{
+	global $pagenow;
+	
+	// if post_id is set, it's the editor upload...
+	if ( ( 'media-upload.php' == $pagenow || 'async-upload.php' == $pagenow ) && !isset( $_REQUEST['post_id'] ) )
+	{
+		return true;
+	}
+	return false;
+}
+
+function hijack_thickbox_text($translated_text, $source_text, $domain)
+{
+	if ( is_attachments_context() )
+	{
+		if ('Insert into Post' == $source_text) {
+			return __('Attach', 'attachments' );
+		}
+	}
+	return $translated_text;
+}
+
+
+
+
 
 /**
  * This is the main initialization function, it will invoke the necessary meta_box
@@ -396,12 +453,18 @@ function attachments_get_attachments( $post_id=null )
 
 function attachments_init()
 {
-	wp_enqueue_script('jquery-ui-core');
-	wp_enqueue_script('jquery-ui-tabs');
-	wp_enqueue_script('thickbox');
-	wp_enqueue_style('thickbox');
-	wp_enqueue_style('attachments', WP_PLUGIN_URL . '/attachments/css/attachments.css');
-	wp_enqueue_script('attachments', WP_PLUGIN_URL . '/attachments/js/attachments.js');
+	global $pagenow;
+	
+	wp_enqueue_script( 'jquery-ui-core' );
+	wp_enqueue_style( 'thickbox' );
+	
+	if ( 'media-upload.php' == $pagenow || 'async-upload.php' == $pagenow )
+	{
+		add_filter( 'gettext', 'hijack_thickbox_text', 1, 3 );
+	}
+
+	wp_enqueue_style( 'attachments', WP_PLUGIN_URL . '/attachments/css/attachments.css' );
+	wp_enqueue_script( 'attachments', WP_PLUGIN_URL . '/attachments/js/attachments.js', array( 'thickbox' ), false, false );
 
 	if( function_exists( 'load_plugin_textdomain' ) )
 	{
@@ -414,6 +477,6 @@ function attachments_init()
 			load_plugin_textdomain( 'attachments', false, dirname( plugin_basename( __FILE__ ) ) );
 		}
 	}
-	
+
 	attachments_meta_box();
 }

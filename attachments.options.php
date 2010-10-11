@@ -28,20 +28,20 @@
 					</div>
 
 				<?php endforeach ?>
-			
+				
+				<input type="hidden" name="action" value="update" />
+				<input type="hidden" name="page_options" value="attachments_limit_to_user,<?php if( !empty( $post_types ) ) : foreach( $post_types as $post_type ) : ?>attachments_cpt_<?php echo $post_type->name; ?>,<?php endforeach; endif; ?>" />
+				<p class="submit">
+					<input type="submit" class="button-primary" value="<?php _e("Save", "attachments");?>" />
+				</p>
+
+			<?php else: ?>
+
+				<?php _e("<p>Attachments can be integrated with your Custom Post Types. Unfortunately, there are none to work with at this time.</p>"); ?>
+
 			<?php endif ?>
-			
+
 		<?php endif ?>
 
-		<h3><?php _e("Privacy Settings", "attachments"); ?></h3>
-		<div class="attachments_checkbox">
-			<input type="checkbox" name="attachments_limit_to_user" id="attachments_limit_to_user" value="true"<?php if (get_option('attachments_limit_to_user')=='true') : ?> checked="checked"<?php endif ?> />
-			<label for="attachments_limit_to_user"><?php _e("Users can only see their own attachments", "attachments");?></label>
-		</div>
-		<input type="hidden" name="action" value="update" />
-		<input type="hidden" name="page_options" value="attachments_limit_to_user,<?php if( !empty( $post_types ) ) : foreach( $post_types as $post_type ) : ?>attachments_cpt_<?php echo $post_type->name; ?>,<?php endforeach; endif; ?>" />
-		<p class="submit">
-			<input type="submit" class="button-primary" value="<?php _e("Save", "attachments");?>" />
-		</p>
 	</form>
 </div>

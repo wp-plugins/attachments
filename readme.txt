@@ -4,7 +4,7 @@ Donate link: http://mondaybynoon.com/donate/
 Tags: post, page, posts, pages, images, PDF, doc, Word, image, jpg, jpeg, picture, pictures, photos, attachment
 Requires at least: 2.8
 Tested up to: 3.0.1
-Stable tag: 1.1.1
+Stable tag: 1.5
 
 Attachments allows you to append any number of items from your WordPress Media Library to Posts, Pages, and Custom Post Types
 
@@ -40,6 +40,9 @@ Attachments uses WordPress' built in Media library for uploads and storage.
 1. Attachments meta box on every Post and Page
 
 == Changelog ==
+
+= 1.5 =
+* Completely revamped the upload/browse experience. Attachments now uses WordPress default modal dialogs.
 
 = 1.1.1 =
 * Fixed a bug with storing foreign characters
