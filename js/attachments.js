@@ -89,7 +89,7 @@ function attachments_handle_attach(title,caption,id,thumb){
 	new_attachments += '<div class="attachment-thumbnail"><span class="attachments-thumbnail">';
 
 	
-	new_attachments += '<img src="' + attachment_thumb + '" width="80" alt="Thumbnail" />';
+	new_attachments += '<img src="' + attachment_thumb + '" alt="Thumbnail" />';
 	new_attachments += '</span></div>';
 	new_attachments += '</li>';
 
@@ -108,7 +108,7 @@ jQuery(document).ready(function() {
 
 	if(attachments_is_attachments_context)
 	{
-		jQuery('body').addClass('attachments-media-upload');
+	    jQuery('body').addClass('attachments-media-upload');
 
 		// we need to hijack the Attach button
 		jQuery('td.savesend input').live('click',function(e){

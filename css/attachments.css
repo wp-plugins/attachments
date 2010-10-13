@@ -42,13 +42,15 @@ p.attachments-actions { float:right; margin:6px 0 0 !important; }
 #poststuff li.attachments-file h2 span { display:block; float:left; }
 #poststuff li.attachments-file h2 a span.attachment-handle-icon { padding:9px 0 0 0; cursor:move; }
 #poststuff li.attachments-file h2 span.attachment-name { padding:0 10px; height:2em; overflow:hidden; width:60%; }
-#poststuff li.attachments-file h2 span.attachment-delete { width:60px; text-align:center; padding:0.7em 0 0 0; float:right; margin-right:3px; }
+#poststuff li.attachments-file h2 span.attachment-delete { width:80px; text-align:center; padding:0.7em 0 0 0; float:right; margin-right:3px; }
 #poststuff li.attachments-file h2 span.attachment-delete a { font:11px "Lucida Grande",Verdana,Arial,"Bitstream Vera Sans",sans-serif; color:#21759b; text-decoration:underline; }
 #poststuff li.attachments-file h2 span.attachment-delete a:hover { color:#d54e21; }
 
 #attachments-list .attachments-file { overflow:hidden; zoom:1; }
 #attachments-list .attachments-fields { width:80%; float:left; }
-#attachments-list .attachments-thumbnail { width:80px; float:right; text-align:right; padding-right:3px; }
+#attachments-list .attachment-thumbnail { width:80px; float:right; margin-right:3px; }
+#attachments-list .attachments-thumbnail { width:80px; float:right; text-align:right; }
+#attachments-list .attachments-thumbnail img { display:block; max-width:80px; margin:0 auto; }
 
 .attachments-fields .textfield { overflow:hidden; zoom:1; padding-bottom:10px; }
 .attachments-fields .textfield label { display:block; width:20%; float:left; padding-top:6px; }

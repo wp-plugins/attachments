@@ -4,13 +4,13 @@ Donate link: http://mondaybynoon.com/donate/
 Tags: post, page, posts, pages, images, PDF, doc, Word, image, jpg, jpeg, picture, pictures, photos, attachment
 Requires at least: 2.8
 Tested up to: 3.0.1
-Stable tag: 1.5
+Stable tag: 1.5.1
 
-Attachments allows you to append any number of items from your WordPress Media Library to Posts, Pages, and Custom Post Types
+Attachments allows you to simply append any number of items from your WordPress Media Library to Posts, Pages, and Custom Post Types
 
 == Description ==
 
-Attachments allows you to append any number of items from your WordPress Media Library to Posts, Pages, and Custom Post Types. This plugin *does not* directly interact with your theme, you will need to edit your template files.
+Attachments allows you to simply append any number of items from your WordPress Media Library to Posts, Pages, and Custom Post Types. This plugin *does not* directly interact with your theme, you will need to edit your template files.
 
 There is a **screencast available** on the [plugin home page](http://mondaybynoon.com/wordpress-attachments/)
 
@@ -37,9 +37,16 @@ Attachments uses WordPress' built in Media library for uploads and storage.
 
 == Screenshots ==
 
-1. Attachments meta box on every Post and Page
+1. Attachments meta box as it appears on Posts, Pages, or Custom Post Types
+2. Native WordPress browse modal dialog, slightly customized for Attachments. Upload straight from your computer.
+3. You can also browse the existing media in your Media Library. The dialog remains open, allowing you to attach multiple assets.
+4. Once assets have been attached, you can customize the title, caption, and order
 
 == Changelog ==
+
+= 1.5.1 =
+* Fixed thumbnail rendering issue
+* Fixed issue where browse modal included extraneous items after filtering or searching
 
 = 1.5 =
 * Completely revamped the upload/browse experience. Attachments now uses WordPress default modal dialogs.
