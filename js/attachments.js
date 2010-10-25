@@ -112,13 +112,12 @@ jQuery(document).ready(function() {
 
 		// we need to hijack the Attach button
 		jQuery('td.savesend input').live('click',function(e){
-			e.preventDefault();
-			parent = jQuery(this).parent().parent().parent();
-			title = parent.find('tr.post_title td.field input').val();
-			caption = parent.find('tr.post_excerpt td.field input').val();
-			id = str_replace( 'imgedit-response-', '', parent.find('td.imgedit-response').attr('id') );
-			thumb = parent.parent().parent().find('img.pinkynail').attr('src');
-			attachments_handle_attach(title,caption,id,thumb);
+			theparent = jQuery(this).parent().parent().parent();
+			thetitle = theparent.find('tr.post_title td.field input').val();
+			thecaption = theparent.find('tr.post_excerpt td.field input').val();
+			theid = str_replace( 'imgedit-response-', '', theparent.find('td.imgedit-response').attr('id') );
+			thethumb = theparent.parent().parent().find('img.pinkynail').attr('src');
+			attachments_handle_attach(thetitle,thecaption,theid,thethumb);
 			jQuery(this).after('<span class="attachments-attached-note"> Attached</span>').parent().find('span.attachments-attached-note').delay(1000).fadeOut();
 			return false;
 		});

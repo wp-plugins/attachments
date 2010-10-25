@@ -73,6 +73,7 @@ p.attachments-actions { float:right; margin:6px 0 0 !important; }
 
 /* Hide WP UI elements only for Attachments */
 body#media-upload.attachments-media-upload #tab-type_url,
+body#media-upload.attachments-media-upload #tab-nextgen,
 body#media-upload.attachments-media-upload p.ml-submit,
 body#media-upload.attachments-media-upload p.savebutton.ml-submit,
 body#media-upload.attachments-media-upload div.media-item tr.url,
