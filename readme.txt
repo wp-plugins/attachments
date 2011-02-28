@@ -4,7 +4,7 @@ Donate link: http://mondaybynoon.com/donate/
 Tags: post, page, posts, pages, images, PDF, doc, Word, image, jpg, jpeg, picture, pictures, photos, attachment
 Requires at least: 3.0
 Tested up to: 3.1
-Stable tag: 1.5.1.2
+Stable tag: 1.5.2
 
 Attachments allows you to simply append any number of items from your WordPress Media Library to Posts, Pages, and Custom Post Types
 
@@ -12,7 +12,7 @@ Attachments allows you to simply append any number of items from your WordPress 
 
 Attachments allows you to simply append any number of items from your WordPress Media Library to Posts, Pages, and Custom Post Types. This plugin *does not* directly interact with your theme, you will need to edit your template files.
 
-There is a **screencast available** on the [plugin home page](http://mondaybynoon.com/wordpress-attachments/)
+There is an [outdated] **screencast available** on the [plugin home page](http://mondaybynoon.com/wordpress-attachments/) that will be upgraded soon.
 
 == Installation ==
 
@@ -33,7 +33,7 @@ Attachments uses WordPress' built in Media library for uploads and storage.
 
 = I lost my Attachments after upgrading! =
 
-***Do not update any Post/Page with Attachments***, the data has not been lost. Please [contact me](http://mondaybynoon.com/contact/) to begin a bugfix
+***DO NOT update any Post/Page/CPT with Attachments***, the data has not been lost. Please [contact me](http://mondaybynoon.com/contact/) to begin a bugfix
 
 == Screenshots ==
 
@@ -43,6 +43,13 @@ Attachments uses WordPress' built in Media library for uploads and storage.
 4. Once assets have been attached, you can customize the title, caption, and order
 
 == Changelog ==
+
+= 1.5.2 =
+* Added Swedish translation, courtesy of Sebastian Johansson
+* 'Attach' button is now localized
+* Fixed a couple of other miscellaneous localization issues
+* Added Italian translation, courtesy of Andrea Bersi
+* Fixed a number of PHP notices/warnings in more strict environments
 
 = 1.5.1.2 =
 * Fixed bug with handling legacy Attachments data store
@@ -118,9 +125,12 @@ As always, be sure to back up your database and files before upgrading.
 = 1.0.7 =
 Attachments are now stored in such a way that removes an in-place limitation on string lengths for both titles and captions.
 
-== Screencast ==
+== Roadmap ==
 
-There is a **screencast available** on the [plugin home page](http://mondaybynoon.com/wordpress-attachments/)
+Planned feature additions include:
+
+* Physically attaching Attachments to Posts/Pages/Custom Post Types on a WordPress level
+* Modifying UI to provide ability to better bulk-add Attachments
 
 == Usage ==
 
@@ -139,19 +149,19 @@ Firing `attachments_get_attachments()` returns an array consisting of all availa
 Here is a basic implementation:
 
 `<?php 
-  $attachments = attachments_get_attachments();
-  $total_attachments = count($attachments);
-  if( $total_attachments > 0 )
+  if( function_exists( 'attachments_get_attachments' ) )
   {
-    echo '<ul>';
-    for ($i=0; $i < $total_attachments; $i++)
-    {
-      echo '<li>' . $attachments[$i]['title'] . '</li>';
-      echo '<li>' . $attachments[$i]['caption'] . '</li>';
-      echo '<li>' . $attachments[$i]['id'] . '</li>';
-      echo '<li>' . $attachments[$i]['location'] . '</li>';
-      echo '<li>' . $attachments[$i]['mime'] . '</li>';
-    }
-    echo '</ul>';
-  }
-?>`
+    $attachments = attachments_get_attachments();
+    $total_attachments = count( $attachments );
+    if( $total_attachments ) : ?>
+      <ul>
+      <?php for( $i=0; $i<$total_attachments; $i++ ) : ?>
+        <li><?php echo $attachments[$i]['title']; ?></li>
+        <li><?php echo $attachments[$i]['caption']; ?></li>
+        <li><?php echo $attachments[$i]['id']; ?></li>
+        <li><?php echo $attachments[$i]['location']; ?></li>
+        <li><?php echo $attachments[$i]['mime']; ?></li>
+      <?php endfor; ?>
+      </ul>
+    <?php endif; ?>
+<?php } ?>`
