@@ -3,7 +3,7 @@
     Plugin Name: Attachments
     Plugin URI: http://mondaybynoon.com/wordpress-attachments/
 Description: Attachments gives the ability to append any number of Media Library items to Pages, Posts, and Custom Post Types
-    Version: 1.5.2
+    Version: 1.5.3
     Author: Jonathan Christopher
     Author URI: http://mondaybynoon.com/
 */
@@ -104,7 +104,7 @@ function attachments_options()
     */
 function attachments_menu()
 {
-    add_options_page('Settings', 'Attachments', 8, __FILE__, 'attachments_options');
+    add_options_page('Settings', 'Attachments', 'manage_options', __FILE__, 'attachments_options');
 }
 
 
@@ -197,18 +197,12 @@ function attachments_add()
 
 function attachments_meta_box()
 {
-    // for posts
-    add_meta_box( 'attachments_list', __( 'Attachments', 'attachments' ), 'attachments_add', 'post', 'normal' );
-
-    // for pages
-    add_meta_box( 'attachments_list', __( 'Attachments', 'attachments' ), 'attachments_add', 'page', 'normal' );
-
     // for custom post types
     if( function_exists( 'get_post_types' ) )
     {
         $args = array(
             'public'   => true,
-            '_builtin' => false
+            '_builtin' => true
             ); 
         $output = 'objects';
         $operator = 'and';
@@ -333,11 +327,13 @@ function attachments_save($post_id)
         {
             if( !empty( $_POST['attachment_id_' . $i] ) )
             {
+                $attachment_id      = intval( $_POST['attachment_id_' . $i] );
+
                 $attachment_details = array(
-                    'id'                => $_POST['attachment_id_' . $i],
+                    'id'                => $attachment_id,
                     'title'             => str_replace( '"', '&quot;', $_POST['attachment_title_' . $i] ),
                     'caption'           => str_replace( '"', '&quot;', $_POST['attachment_caption_' . $i] ),
-                    'order'             => $_POST['attachment_order_' . $i]
+                    'order'             => intval( $_POST['attachment_order_' . $i] )
                     );
 
                 // serialize data and encode
@@ -345,6 +341,24 @@ function attachments_save($post_id)
 
                 // add individual attachment
                 add_post_meta( $post_id, '_attachments', $attachment_serialized );
+
+                // save native Attach
+                if( get_option( 'attachments_store_native' ) == 'true' )
+                {
+                    // need to first check to make sure we're not overwriting a native Attach
+                    $attach_post_ref                = get_post( $attachment_id ); 
+
+                    if( $attach_post_ref->post_parent == 0 )
+                    {
+                        // no current Attach, we can add ours
+                        $attach_post                    = array();
+                        $attach_post['ID']              = $attachment_id;
+                        $attach_post['post_parent']     = $post_id;
+
+                        wp_update_post( $attach_post );
+                    }
+                }
+
             }
         }
 
@@ -453,7 +467,7 @@ function is_attachments_context()
     global $pagenow;
 
     // if post_id is set, it's the editor upload...
-    if ( ( 'media-upload.php' == $pagenow || 'async-upload.php' == $pagenow ) && empty( $_REQUEST['post_id'] ) )
+    if ( ( 'media-upload.php' == $pagenow || 'async-upload.php' == $pagenow ) && ( empty( $_REQUEST['post_id'] ) && $_REQUEST['post_id'] != '0' ) )
     {
         return true;
     }
@@ -495,7 +509,7 @@ function attachments_init()
     }
 
     wp_enqueue_style( 'attachments', WP_PLUGIN_URL . '/attachments/css/attachments.css' );
-    wp_enqueue_script( 'attachments', WP_PLUGIN_URL . '/attachments/js/attachments.js', array( 'thickbox' ), false, false );
+    wp_enqueue_script( 'attachments', WP_PLUGIN_URL . '/attachments/js/attachments.js', array( 'jquery', 'thickbox' ), false, false );
 
     if( function_exists( 'load_plugin_textdomain' ) )
     {

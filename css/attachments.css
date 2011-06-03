@@ -7,9 +7,9 @@ ul#attachments-actions { overflow:hidden; zoom:1; padding-top:4px; }
 ul#attachments-actions li { width:50%; float:left; }
 li#attachments-add-new { float:right; text-align:right; }
 
-#attachments-instructions { background:#fff; margin:0; padding:12px 0 !important; }
+#attachments-instructions { margin:0; padding:12px 0 !important; }
 
-#attachments-file-list { padding:0; background:#fff; }
+#attachments-file-list { padding:0; }
 .attachments-file-section { padding:0 0 20px 0; }
 p.attachments-actions { float:right; margin:6px 0 0 !important; }
 
@@ -34,13 +34,13 @@ p.attachments-actions { float:right; margin:6px 0 0 !important; }
 /* = META BOX FILE LISTING = */
 /* ========================= */
 #attachments-list ul { padding:10px 0; }
-#attachments-list li.attachments-file { overflow:hidden; zoom:1; background:#fff; }
+#attachments-list li.attachments-file { overflow:hidden; zoom:1; }
 .attachments-data { display:none; }
 #poststuff li.attachments-file { height:115px; }
 #poststuff li.attachments-file h2 { margin:0; overflow:hidden; zoom:1; }
 #poststuff li.attachments-file h2 a { text-decoration:none; color:inherit; }
 #poststuff li.attachments-file h2 span { display:block; float:left; }
-#poststuff li.attachments-file h2 a span.attachment-handle-icon { padding:9px 0 0 0; cursor:move; }
+#poststuff li.attachments-file h2 a span.attachment-handle-icon { padding:6px 0 0 0; cursor:move; }
 #poststuff li.attachments-file h2 span.attachment-name { padding:0 10px; height:2em; overflow:hidden; width:60%; }
 #poststuff li.attachments-file h2 span.attachment-delete { width:80px; text-align:center; padding:0.7em 0 0 0; float:right; margin-right:3px; }
 #poststuff li.attachments-file h2 span.attachment-delete a { font:11px "Lucida Grande",Verdana,Arial,"Bitstream Vera Sans",sans-serif; color:#21759b; text-decoration:underline; }
@@ -63,6 +63,7 @@ p.attachments-actions { float:right; margin:6px 0 0 !important; }
 .attachments_checkbox { overflow:hidden; zoom:1; padding:0 0 7px 0; }
 .attachments_checkbox input { display:block; float:left; margin-top:2px; }
 .attachments_checkbox label { display:block; float:left; padding:0 0 0 7px; }
+.attachments_checkbox p.note { clear:both; font-style:italic; padding:4px 0 0 21px; max-width:550px; color:#888; }
 
 #attachments-tabs .subsubsub { float:left; }
 #attachments-tabs .subsubsub a { color:#21759b !important; }

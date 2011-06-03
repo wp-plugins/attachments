@@ -7,19 +7,26 @@
         <?php if( function_exists( 'get_post_types' ) ) : ?>
             
             <?php 
-                $args = array(
-                    'public'   => true,
-                    '_builtin' => false
-                    ); 
-                $output = 'objects';
-                $operator = 'and';
-                $post_types = get_post_types( $args, $output, $operator );
+                $args           = array(
+                                    'public'   => true,
+                                    '_builtin' => false
+                                    ); 
+                $output         = 'objects';
+                $operator       = 'and';
+                $post_types     = get_post_types( $args, $output, $operator );
+
+                // we also want to optionally enable Pages and Posts
+                $post_types['post']->labels->name   = 'Posts';
+                $post_types['post']->name           = 'post';
+                $post_types['page']->labels->name   = 'Pages';
+                $post_types['page']->name           = 'page';
+
             ?>
             
             <?php if( count( $post_types ) ) : ?>
             
-                <h3><?php _e("Custom Post Type Settings", "attachments"); ?></h3>
-                <p><?php _e("Include Attachments in the following Custom Post Types:", "attachments"); ?></p>
+                <h3><?php _e("Post Type Settings", "attachments"); ?></h3>
+                <p><?php _e("Include Attachments in the following Post Types:", "attachments"); ?></p>
                 <?php foreach($post_types as $post_type) : ?>
 
                     <div class="attachments_checkbox">
@@ -28,12 +35,6 @@
                     </div>
 
                 <?php endforeach ?>
-                
-                <input type="hidden" name="action" value="update" />
-                <input type="hidden" name="page_options" value="attachments_limit_to_user,<?php if( !empty( $post_types ) ) : foreach( $post_types as $post_type ) : ?>attachments_cpt_<?php echo $post_type->name; ?>,<?php endforeach; endif; ?>" />
-                <p class="submit">
-                    <input type="submit" class="button-primary" value="<?php _e("Save", "attachments");?>" />
-                </p>
 
             <?php else: ?>
 
@@ -42,6 +43,19 @@
             <?php endif ?>
 
         <?php endif ?>
+
+        <h3><?php _e("Miscellaneous", "attachments"); ?></h3>
+        <div class="attachments_checkbox">
+            <input type="checkbox" name="attachments_store_native" id="attachments_store_native" value="true"<?php if (get_option('attachments_store_native')=='true') : ?> checked="checked"<?php endif ?> />
+            <label for="attachments_store_native">Make WordPress-level attachment relationships</label>
+            <p class="note">If checked, Attachments will tell WordPress that all Attachments for the entry should be marked as such as though it were included in the main editor. The association will be made as though it were. Changing this option <strong>will not</strong> update existing Attachments, it only effects future saves.</p>
+        </div>
+
+        <input type="hidden" name="action" value="update" />
+        <input type="hidden" name="page_options" value="attachments_store_native,<?php if( !empty( $post_types ) ) : foreach( $post_types as $post_type ) : ?>attachments_cpt_<?php echo $post_type->name; ?>,<?php endforeach; endif; ?>" />
+        <p class="submit">
+            <input type="submit" class="button-primary" value="<?php _e("Save", "attachments");?>" />
+        </p>
 
     </form>
 </div>
