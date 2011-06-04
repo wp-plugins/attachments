@@ -1,29 +1,29 @@
 <?php
 /*
-    Plugin Name: Attachments
-    Plugin URI: http://mondaybynoon.com/wordpress-attachments/
-Description: Attachments gives the ability to append any number of Media Library items to Pages, Posts, and Custom Post Types
-    Version: 1.5.3
-    Author: Jonathan Christopher
-    Author URI: http://mondaybynoon.com/
+ Plugin Name: Attachments
+ Plugin URI: http://mondaybynoon.com/wordpress-attachments/
+ Description: Attachments gives the ability to append any number of Media Library items to Pages, Posts, and Custom Post Types
+ Version: 1.5.3.1
+ Author: Jonathan Christopher
+ Author URI: http://mondaybynoon.com/
 */
 
 /*  Copyright 2009 Jonathan Christopher  (email : jonathandchr@gmail.com)
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-    */
+ You should have received a copy of the GNU General Public License
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ */
 
 
 // ===========
@@ -37,7 +37,7 @@ global $wpdb;
 // =========
 // = HOOKS =
 // =========
-if( WP_ADMIN )
+if( is_admin() )
 {
     add_action( 'admin_menu', 'attachments_init' );
     add_action( 'admin_head', 'attachments_init_js' );
@@ -53,13 +53,13 @@ if( WP_ADMIN )
 // =============
 
 /**
-    * Compares two array values with the same key "order"
-    *
-    * @param string $a First value
-    * @param string $b Second value
-    * @return int
-    * @author Jonathan Christopher
-    */
+ * Compares two array values with the same key "order"
+ *
+ * @param string $a First value
+ * @param string $b Second value
+ * @return int
+ * @author Jonathan Christopher
+ */
 function attachments_cmp($a, $b)
 {
     $a = intval( $a['order'] );
@@ -83,11 +83,11 @@ function attachments_cmp($a, $b)
 
 
 /**
-    * Creates the markup for the WordPress admin options page
-    *
-    * @return void
-    * @author Jonathan Christopher
-    */
+ * Creates the markup for the WordPress admin options page
+ *
+ * @return void
+ * @author Jonathan Christopher
+ */
 function attachments_options()
 {
     include 'attachments.options.php';
@@ -97,11 +97,11 @@ function attachments_options()
 
 
 /**
-    * Creates the entry for Attachments Options under Settings in the WordPress Admin
-    *
-    * @return void
-    * @author Jonathan Christopher
-    */
+ * Creates the entry for Attachments Options under Settings in the WordPress Admin
+ *
+ * @return void
+ * @author Jonathan Christopher
+ */
 function attachments_menu()
 {
     add_options_page('Settings', 'Attachments', 'manage_options', __FILE__, 'attachments_options');
@@ -111,102 +111,100 @@ function attachments_menu()
 
 
 /**
-    * Inserts HTML for meta box, including all existing attachments
-    *
-    * @return void
-    * @author Jonathan Christopher
-    */
+ * Inserts HTML for meta box, including all existing attachments
+ *
+ * @return void
+ * @author Jonathan Christopher
+ */
 function attachments_add()
 {?>
 
     <div id="attachments-inner">
 
         <?php
-    $media_upload_iframe_src = "media-upload.php?type=image&TB_iframe=1";
-    $image_upload_iframe_src = apply_filters( 'image_upload_iframe_src', "$media_upload_iframe_src" );
-    ?>
+            $media_upload_iframe_src = "media-upload.php?type=image&TB_iframe=1";
+            $image_upload_iframe_src = apply_filters( 'image_upload_iframe_src', "$media_upload_iframe_src" );
+            ?>
 
-    <ul id="attachments-actions">
-        <li>
-            <a id="attachments-thickbox" href="<?php echo $image_upload_iframe_src; ?>&attachments_thickbox=1" title="Attachments" class="button button-highlighted">
-                <?php _e( 'Attach', 'attachments' ) ?>
-            </a>
-        </li>
-    </ul>
-
-    <div id="attachments-list">
-        <input type="hidden" name="attachments_nonce" id="attachments_nonce" value="<?php echo wp_create_nonce( plugin_basename(__FILE__) ); ?>" />
-        <ul>
-            <?php
-        if( !empty($_GET['post']) )
-        {
-            // get all attachments
-            $existing_attachments = attachments_get_attachments( intval( $_GET['post'] ) );
-
-            if( is_array($existing_attachments) && !empty($existing_attachments) )
-            {
-                $attachment_index = 0;
-                foreach ($existing_attachments as $attachment) : $attachment_index++; ?>
-                <li class="attachments-file">
-                    <h2>
-                        <a href="#" class="attachment-handle">
-                            <span class="attachment-handle-icon"><img src="<?php echo WP_PLUGIN_URL; ?>/attachments/images/handle.gif" alt="Drag" /></span>
+                <ul id="attachments-actions">
+                    <li>
+                        <a id="attachments-thickbox" href="<?php echo $image_upload_iframe_src; ?>&attachments_thickbox=1" title="Attachments" class="button button-highlighted">
+                            <?php _e( 'Attach', 'attachments' ) ?>
                         </a>
-                        <span class="attachment-name"><?php echo $attachment['name']; ?></span>
-                        <span class="attachment-delete"><a href="#"><?php _e("Delete", "attachments")?></a></span>
-                    </h2>
-                    <div class="attachments-fields">
-                        <div class="textfield" id="field_attachment_title_<?php echo $attachment_index ; ?>">
-                            <label for="attachment_title_<?php echo $attachment_index; ?>"><?php _e("Title", "attachments")?></label>
-                            <input type="text" id="attachment_title_<?php echo $attachment_index; ?>" name="attachment_title_<?php echo $attachment_index; ?>" value="<?php echo $attachment['title']; ?>" size="20" />
-                        </div>
-                        <div class="textfield" id="field_attachment_caption_<?php echo $attachment_index; ?>">
-                            <label for="attachment_caption_<?php echo $attachment_index; ?>"><?php _e("Caption", "attachments")?></label>
-                            <input type="text" id="attachment_caption_<?php echo $attachment_index; ?>" name="attachment_caption_<?php echo $attachment_index; ?>" value="<?php echo $attachment['caption']; ?>" size="20" />
-                        </div>
-                    </div>
-                    <div class="attachments-data">
-                        <input type="hidden" name="attachment_id_<?php echo $attachment_index; ?>" id="attachment_id_<?php echo $attachment_index; ?>" value="<?php echo $attachment['id']; ?>" />
-                        <input type="hidden" class="attachment_order" name="attachment_order_<?php echo $attachment_index; ?>" id="attachment_order_<?php echo $attachment_index; ?>" value="<?php echo $attachment['order']; ?>" />
-                    </div>
-                    <div class="attachment-thumbnail">
-                        <span class="attachments-thumbnail">
-                            <?php echo wp_get_attachment_image( $attachment['id'], array(80, 60), 1 ); ?>
-                        </span>
-                    </div>
-                </li>
-            <?php endforeach;
-        }
-    }
-    ?>
-</ul>
-</div>
+                    </li>
+                </ul>
 
-</div>
+                <div id="attachments-list">
+                    <input type="hidden" name="attachments_nonce" id="attachments_nonce" value="<?php echo wp_create_nonce( plugin_basename(__FILE__) ); ?>" />
+                    <ul>
+                        <?php
+                    if( !empty($_GET['post']) )
+                    {
+                        // get all attachments
+                        $existing_attachments = attachments_get_attachments( intval( $_GET['post'] ) );
 
+                        if( is_array($existing_attachments) && !empty($existing_attachments) )
+                        {
+                            $attachment_index = 0;
+                            foreach ($existing_attachments as $attachment) : $attachment_index++; ?>
+                            <li class="attachments-file">
+                                <h2>
+                                    <a href="#" class="attachment-handle">
+                                        <span class="attachment-handle-icon"><img src="<?php echo WP_PLUGIN_URL; ?>/attachments/images/handle.gif" alt="Drag" /></span>
+                                    </a>
+                                    <span class="attachment-name"><?php echo $attachment['name']; ?></span>
+                                    <span class="attachment-delete"><a href="#"><?php _e("Delete", "attachments")?></a></span>
+                                </h2>
+                                <div class="attachments-fields">
+                                    <div class="textfield" id="field_attachment_title_<?php echo $attachment_index ; ?>">
+                                        <label for="attachment_title_<?php echo $attachment_index; ?>"><?php _e("Title", "attachments")?></label>
+                                        <input type="text" id="attachment_title_<?php echo $attachment_index; ?>" name="attachment_title_<?php echo $attachment_index; ?>" value="<?php echo $attachment['title']; ?>" size="20" />
+                                    </div>
+                                    <div class="textfield" id="field_attachment_caption_<?php echo $attachment_index; ?>">
+                                        <label for="attachment_caption_<?php echo $attachment_index; ?>"><?php _e("Caption", "attachments")?></label>
+                                        <input type="text" id="attachment_caption_<?php echo $attachment_index; ?>" name="attachment_caption_<?php echo $attachment_index; ?>" value="<?php echo $attachment['caption']; ?>" size="20" />
+                                    </div>
+                                </div>
+                                <div class="attachments-data">
+                                    <input type="hidden" name="attachment_id_<?php echo $attachment_index; ?>" id="attachment_id_<?php echo $attachment_index; ?>" value="<?php echo $attachment['id']; ?>" />
+                                    <input type="hidden" class="attachment_order" name="attachment_order_<?php echo $attachment_index; ?>" id="attachment_order_<?php echo $attachment_index; ?>" value="<?php echo $attachment['order']; ?>" />
+                                </div>
+                                <div class="attachment-thumbnail">
+                                    <span class="attachments-thumbnail">
+                                        <?php echo wp_get_attachment_image( $attachment['id'], array(80, 60), 1 ); ?>
+                                    </span>
+                                </div>
+                            </li>
+                        <?php endforeach;
+                    }
+                }
+                ?>
+            </ul>
+        </div>
+    </div>
 <?php }
 
 
 
 /**
-    * Creates meta box on all Posts and Pages
-    *
-    * @return void
-    * @author Jonathan Christopher
-    */
-
+ * Creates meta box on all Posts and Pages
+ *
+ * @return void
+ * @author Jonathan Christopher
+ */
 function attachments_meta_box()
 {
     // for custom post types
     if( function_exists( 'get_post_types' ) )
     {
         $args = array(
-            'public'   => true,
-            '_builtin' => true
+            'public'    => true,
+            'show_ui'   => true,
+            '_builtin'  => true
             ); 
-        $output = 'objects';
-        $operator = 'and';
-        $post_types = get_post_types( $args, $output, $operator );
+        $output         = 'objects';
+        $operator       = 'and';
+        $post_types     = get_post_types( $args, $output, $operator );
         foreach($post_types as $post_type)
         {
             if (get_option('attachments_cpt_' . $post_type->name)=='true')
@@ -220,33 +218,33 @@ function attachments_meta_box()
 
 
 /**
-    * Echos JavaScript that sets some required global variables
-    *
-    * @return void
-    * @author Jonathan Christopher
-    */
+ * Echos JavaScript that sets some required global variables
+ *
+ * @return void
+ * @author Jonathan Christopher
+ */
 function attachments_init_js()
 {
     global $pagenow;
 
     echo '<script type="text/javascript" charset="utf-8">';
-    echo '	var attachments_base = "' . WP_PLUGIN_URL . '/attachments"; ';
-    echo '	var attachments_media = ""; ';
+    echo '  var attachments_base = "' . WP_PLUGIN_URL . '/attachments"; ';
+    echo '  var attachments_media = ""; ';
     if ( 'media-upload.php' == $pagenow || 'async-upload.php' == $pagenow )
     {
-        echo '	var attachments_upload = true; ';
+        echo '  var attachments_upload = true; ';
     }
     else
     {
-        echo '	var attachments_upload = false; ';
+        echo '  var attachments_upload = false; ';
     }
     if( ( 'media-upload.php' == $pagenow || 'async-upload.php' == $pagenow ) && is_attachments_context() )
     {
-        echo '	var attachments_is_attachments_context = true; ';
+        echo '  var attachments_is_attachments_context = true; ';
     }
     else
     {
-        echo '	var attachments_is_attachments_context = false; ';
+        echo '  var attachments_is_attachments_context = false; ';
     }
     echo '</script>';
 }
@@ -254,13 +252,13 @@ function attachments_init_js()
 
 
 /**
-    * Fired when Post or Page is saved. Serializes all attachment data and saves to post_meta
-    *
-    * @param int $post_id The ID of the current post
-    * @return void
-    * @author Jonathan Christopher
-    * @author JR Tashjian
-    */
+ * Fired when Post or Page is saved. Serializes all attachment data and saves to post_meta
+ *
+ * @param int $post_id The ID of the current post
+ * @return void
+ * @author Jonathan Christopher
+ * @author JR Tashjian
+ */
 function attachments_save($post_id)
 {
     // verify this came from the our screen and with proper authorization,
@@ -369,13 +367,13 @@ function attachments_save($post_id)
 
 
 /**
-    * Retrieves all Attachments for provided Post or Page
-    *
-    * @param int $post_id (optional) ID of target Post or Page, otherwise pulls from global $post
-    * @return array $post_attachments
-    * @author Jonathan Christopher
-    * @author JR Tashjian
-    */
+ * Retrieves all Attachments for provided Post or Page
+ *
+ * @param int $post_id (optional) ID of target Post or Page, otherwise pulls from global $post
+ * @return array $post_attachments
+ * @author Jonathan Christopher
+ * @author JR Tashjian
+ */
 function attachments_get_attachments( $post_id=null )
 {
     global $post;
@@ -467,7 +465,7 @@ function is_attachments_context()
     global $pagenow;
 
     // if post_id is set, it's the editor upload...
-    if ( ( 'media-upload.php' == $pagenow || 'async-upload.php' == $pagenow ) && ( empty( $_REQUEST['post_id'] ) && $_REQUEST['post_id'] != '0' ) )
+    if ( !isset( $_REQUEST['post_id'] ) || ( 'media-upload.php' == $pagenow || 'async-upload.php' == $pagenow ) && ( empty( $_REQUEST['post_id'] ) && $_REQUEST['post_id'] != '0' ) )
     {
         return true;
     }
@@ -490,11 +488,11 @@ function hijack_thickbox_text($translated_text, $source_text, $domain)
 
 
 /**
-    * This is the main initialization function, it will invoke the necessary meta_box
-    *
-    * @return void
-    * @author Jonathan Christopher
-    */
+ * This is the main initialization function, it will invoke the necessary meta_box
+ *
+ * @return void
+ * @author Jonathan Christopher
+ */
 
 function attachments_init()
 {

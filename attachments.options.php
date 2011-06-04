@@ -8,8 +8,9 @@
             
             <?php 
                 $args           = array(
-                                    'public'   => true,
-                                    '_builtin' => false
+                                    'public'    => true,
+                                    'show_ui'   => true,
+                                    '_builtin'  => false
                                     ); 
                 $output         = 'objects';
                 $operator       = 'and';
