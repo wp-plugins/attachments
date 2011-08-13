@@ -3,29 +3,53 @@ Contributors: jchristopher
 Donate link: http://mondaybynoon.com/donate/
 Tags: post, page, posts, pages, images, PDF, doc, Word, image, jpg, jpeg, picture, pictures, photos, attachment
 Requires at least: 3.0
-Tested up to: 3.2
-Stable tag: 1.5.3.2
+Tested up to: 3.2.1
+Stable tag: 1.5.4
 
 Attachments allows you to simply append any number of items from your WordPress Media Library to Posts, Pages, and Custom Post Types
 
 == Description ==
 
+= Attachments Pro Now Availble! =
+
+Attachments Pro brings a number of frequently requested features:
+
+* Multiple Attachments instances on edit screens
+* Customizable field labels
+* Unlimited number of fields per Attachment
+* Ability to define rules limiting the availablility of Attachments on edit screens
+
+**Much more information** available about [Attachments Pro](http://mondaybynoon.com/store/attachments-pro/)
+
+= About Attachments =
+
 Attachments allows you to simply append any number of items from your WordPress Media Library to Posts, Pages, and Custom Post Types. This plugin *does not* directly interact with your theme, you will need to edit your template files.
 
-There is an [outdated] **screencast available** on the [plugin home page](http://mondaybynoon.com/wordpress-attachments/) that will be upgraded soon.
+There is an [outdated] **screencast available** on the [plugin home page](http://mondaybynoon.com/wordpress-attachments/) that will be updated soon.
+
+![Attachments meta box](http://mondaybynoon.com/images/attachments/screenshot-1.jpg)
+
+![Attachments browse](http://mondaybynoon.com/images/attachments/screenshot-2.jpg)
+
+![Attachments after they've been added](http://mondaybynoon.com/images/attachments/screenshot-3.jpg)
 
 == Installation ==
 
 1. Download the plugin and extract the files
 1. Upload `attachments` to your `~/wp-content/plugins/` directory
 1. Activate the plugin through the 'Plugins' menu in WordPress
+1. View the Attachments settings (located under the main Settings menu in the WordPress admin) and turn on Attachments for your desired post types
 1. Update your templates where applicable (see **Usage**)
 
 == Frequently Asked Questions ==
 
+= Attachments isn't showing up on my edit screens =
+
+You need to turn on Attachments for your post types. View the Attachments settings under the main Settings menu in the WordPress admin.
+
 = Attachments are not showing up in my theme =
 
-You will need to edit your theme files where applicable. Please reference the **Usage** instructions
+You will need to edit your theme files where applicable. Please reference the **Usage** instructions.
 
 = Where are uploads saved? =
 
@@ -39,10 +63,14 @@ Attachments uses WordPress' built in Media library for uploads and storage.
 
 1. Attachments meta box as it appears on Posts, Pages, or Custom Post Types
 2. Native WordPress browse modal dialog, slightly customized for Attachments. Upload straight from your computer.
-3. You can also browse the existing media in your Media Library. The dialog remains open, allowing you to attach multiple assets.
 4. Once assets have been attached, you can customize the title, caption, and order
 
 == Changelog ==
+
+= 1.5.4 =
+* Updated the way Thickbox is hijacked in an effort to be more stable among tab switching. As an unfortunate result, bulk attaching is no longer possible.
+* Added environment check in preparation for future feature updates
+* Updated Polish translation, courtesy of Wiktor Maj
 
 = 1.5.3.1 =
 * Hotfix for an oversight where Attachments no longer display with Custom Post Types
@@ -142,8 +170,7 @@ Attachments are now stored in such a way that removes an in-place limitation on 
 
 Planned feature additions include:
 
-* Physically attaching Attachments to Posts/Pages/Custom Post Types on a WordPress level
-* Modifying UI to provide ability to better bulk-add Attachments
+* Code refactoring in preparation for future features
 
 == Usage ==
 
@@ -161,7 +188,7 @@ Firing `attachments_get_attachments()` returns an array consisting of all availa
 
 Here is a basic implementation:
 
-`<?php 
+`<?php
   if( function_exists( 'attachments_get_attachments' ) )
   {
     $attachments = attachments_get_attachments();

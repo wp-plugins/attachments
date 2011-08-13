@@ -3,12 +3,12 @@
  Plugin Name: Attachments
  Plugin URI: http://mondaybynoon.com/wordpress-attachments/
  Description: Attachments gives the ability to append any number of Media Library items to Pages, Posts, and Custom Post Types
- Version: 1.5.3.2
+ Version: 1.5.4
  Author: Jonathan Christopher
  Author URI: http://mondaybynoon.com/
 */
 
-/*  Copyright 2009 Jonathan Christopher  (email : jonathandchr@gmail.com)
+/*  Copyright 2009-2011 Jonathan Christopher  (email : jonathan@irontoiron.com)
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -26,6 +26,11 @@
  */
 
 
+// constant definition
+if( !defined( 'IS_ADMIN' ) )
+    define( 'IS_ADMIN',  is_admin() );
+
+
 // ===========
 // = GLOBALS =
 // ===========
@@ -33,17 +38,35 @@
 global $wpdb;
 
 
+// environment check
+$wp_version = get_bloginfo( 'version' );
+if( !version_compare( PHP_VERSION, '5.2', '>=' ) || !version_compare( $wp_version, '3.0', '>=' ) )
+{
+    if( IS_ADMIN && ( !defined( 'DOING_AJAX' ) || !DOING_AJAX ) )
+    {
+        require_once ABSPATH.'/wp-admin/includes/plugin.php';
+        deactivate_plugins( __FILE__ );
+        wp_die( __('Attachments requires PHP 5.2 or higher, as will WordPress 3.2 and higher. It has been automatically deactivated.') );
+    }
+    else
+    {
+        return;
+    }
+}
+
+
 
 // =========
 // = HOOKS =
 // =========
-if( is_admin() )
+if( IS_ADMIN )
 {
     add_action( 'admin_menu', 'attachments_init' );
     add_action( 'admin_head', 'attachments_init_js' );
     add_action( 'save_post',  'attachments_save' );
     add_action( 'admin_menu', 'attachments_menu' );
-    add_action( 'admin_init', 'fix_async_upload_image' );
+
+    load_plugin_textdomain( 'attachments', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
 }
 
 
@@ -200,7 +223,7 @@ function attachments_meta_box()
         $args = array(
             'public'    => true,
             'show_ui'   => true
-            ); 
+            );
         $output         = 'objects';
         $operator       = 'and';
         $post_types     = get_post_types( $args, $output, $operator );
@@ -230,22 +253,6 @@ function attachments_init_js()
     echo '<script type="text/javascript" charset="utf-8">';
     echo '  var attachments_base = "' . WP_PLUGIN_URL . '/attachments"; ';
     echo '  var attachments_media = ""; ';
-    if ( 'media-upload.php' == $pagenow || 'async-upload.php' == $pagenow )
-    {
-        echo '  var attachments_upload = true; ';
-    }
-    else
-    {
-        echo '  var attachments_upload = false; ';
-    }
-    if( ( 'media-upload.php' == $pagenow || 'async-upload.php' == $pagenow ) && is_attachments_context() )
-    {
-        echo '  var attachments_is_attachments_context = true; ';
-    }
-    else
-    {
-        echo '  var attachments_is_attachments_context = false; ';
-    }
     echo '</script>';
 }
 
@@ -344,7 +351,7 @@ function attachments_save($post_id)
                 if( get_option( 'attachments_store_native' ) == 'true' )
                 {
                     // need to first check to make sure we're not overwriting a native Attach
-                    $attach_post_ref                = get_post( $attachment_id ); 
+                    $attach_post_ref                = get_post( $attachment_id );
 
                     if( $attach_post_ref->post_parent == 0 )
                     {
@@ -419,7 +426,7 @@ function attachments_get_attachments( $post_id=null )
     // We can now proceed as normal, all legacy data should now be upgraded
 
     $post_attachments = array();
-    
+
     if( is_array( $existing_attachments ) && count( $existing_attachments ) > 0 )
     {
 
@@ -450,38 +457,6 @@ function attachments_get_attachments( $post_id=null )
 }
 
 
-if( !function_exists( 'fix_async_upload_image' ) )
-{
-    function fix_async_upload_image() {
-        if( isset( $_REQUEST['attachment_id'] ) )
-        {
-            $GLOBALS['post'] = get_post( $_REQUEST['attachment_id'] );
-        }
-    }
-}
-
-function is_attachments_context()
-{
-    global $pagenow;
-
-    // if post_id is set, it's the editor upload...
-    if ( !isset( $_REQUEST['post_id'] ) || ( 'media-upload.php' == $pagenow || 'async-upload.php' == $pagenow ) && ( empty( $_REQUEST['post_id'] ) && $_REQUEST['post_id'] != '0' ) )
-    {
-        return true;
-    }
-    return false;
-}
-
-function hijack_thickbox_text($translated_text, $source_text, $domain)
-{
-    if ( is_attachments_context() )
-    {
-        if ('Insert into Post' == $source_text) {
-            return __('Attach', 'attachments' );
-        }
-    }
-    return $translated_text;
-}
 
 
 
@@ -500,11 +475,6 @@ function attachments_init()
 
     wp_enqueue_script( 'jquery-ui-core' );
     wp_enqueue_style( 'thickbox' );
-
-    if ( 'media-upload.php' == $pagenow || 'async-upload.php' == $pagenow )
-    {
-        add_filter( 'gettext', 'hijack_thickbox_text', 1, 3 );
-    }
 
     wp_enqueue_style( 'attachments', WP_PLUGIN_URL . '/attachments/css/attachments.css' );
     wp_enqueue_script( 'attachments', WP_PLUGIN_URL . '/attachments/js/attachments.js', array( 'jquery', 'thickbox' ), false, false );
