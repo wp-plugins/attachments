@@ -4,20 +4,20 @@ Donate link: http://mondaybynoon.com/donate/
 Tags: post, page, posts, pages, images, PDF, doc, Word, image, jpg, jpeg, picture, pictures, photos, attachment
 Requires at least: 3.0
 Tested up to: 3.2.1
-Stable tag: 1.5.5
+Stable tag: 1.5.6
 
 Attachments allows you to simply append any number of items from your WordPress Media Library to Posts, Pages, and Custom Post Types
 
 == Description ==
 
-= Attachments Pro Now Availble! =
+= Attachments Pro Now Available! =
 
 Attachments Pro brings a number of frequently requested features:
 
 * Multiple Attachments instances on edit screens
 * Customizable field labels
 * Unlimited number of fields per Attachment
-* Ability to define rules limiting the availablility of Attachments on edit screens
+* Ability to define rules limiting the availability of Attachments on edit screens
 
 **Much more information** available about [Attachments Pro](http://mondaybynoon.com/store/attachments-pro/)
 
@@ -26,12 +26,6 @@ Attachments Pro brings a number of frequently requested features:
 Attachments allows you to simply append any number of items from your WordPress Media Library to Posts, Pages, and Custom Post Types. This plugin *does not* directly interact with your theme, you will need to edit your template files.
 
 There is an [outdated] **screencast available** on the [plugin home page](http://mondaybynoon.com/wordpress-attachments/) that will be updated soon.
-
-![Attachments meta box](http://mondaybynoon.com/images/attachments/screenshot-1.jpg)
-
-![Attachments browse](http://mondaybynoon.com/images/attachments/screenshot-2.jpg)
-
-![Attachments after they've been added](http://mondaybynoon.com/images/attachments/screenshot-3.jpg)
 
 == Installation ==
 
@@ -67,8 +61,11 @@ Attachments uses WordPress' built in Media library for uploads and storage.
 
 == Changelog ==
 
+= 1.5.6 =
+* Better restriction of JavaScript assets as a preventative measure for potential plugin conflicts
+
 = 1.5.5 =
-# Re-implemented bulk Attach
+* Re-implemented bulk Attach
 
 = 1.5.4 =
 * Updated the way Thickbox is hijacked in an effort to be more stable among tab switching. As an unfortunate result, bulk attaching is no longer possible.
