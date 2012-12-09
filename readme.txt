@@ -3,8 +3,10 @@ Contributors: jchristopher
 Donate link: http://mondaybynoon.com/donate/
 Tags: post, page, posts, pages, images, PDF, doc, Word, image, jpg, jpeg, picture, pictures, photos, attachment
 Requires at least: 3.0
-Tested up to: 3.4.1
-Stable tag: 1.6.2.1
+Tested up to: 3.5
+Stable tag: 3.0
+License: GPLv2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 Attachments allows you to simply append any number of items from your WordPress Media Library to Posts, Pages, and Custom Post Types
 
@@ -12,12 +14,48 @@ Attachments allows you to simply append any number of items from your WordPress 
 
 Attachments allows you to simply append any number of items from your WordPress Media Library to Posts, Pages, and Custom Post Types. This plugin *does not* directly interact with your theme, you will need to edit your template files.
 
+= Updated for WordPress 3.5! =
+
+WordPress 3.5 ships with an amazing new Media workflow and Attachments 3.0 makes great use of it. *If you are not running WordPress 3.5, version 1.6.2.1 will be used until you upgrade to WordPress 3.5.*
+
+= Associate Media items with posts =
+
+The idea behind Attachments is to give developers the ability to directly associate Media items with any post. This is accomplished by adding a meta box to post edit screens as determined by the developer. Once Media items have been associated with a post, you're able to retrieve those Attachments and include them directly within your template files using any specific markup you wish.
+
+= Integrate Attachments within your theme with fine grained control =
+
+**Attachments does not automatically integrate itself with your theme.** Since the idea behind Attachments is to allow integration of Media within posts using developer-crafted, unique markup, *it's up to you to integrate with your theme*. The most basic integration includes editing the [appropriate template file](http://codex.wordpress.org/Template_Hierarchy) and adding your call(s) to Attachments. For example, if you have set up Attachments to be used with your Posts entries, edit `single.php` to include the following within The Loop:
+
+`<?php $attachments = new Attachments( 'attachments' ); /* pass the instance name */ ?>
+<?php if( $attachments->exist() ) : ?>
+  <h3>Attachments</h3>
+  <ul>
+    <?php while( $attachments->get() ) : ?>
+      <li>
+        ID: <?php echo $attachments->id(); ?><br />
+        Type: <?php echo $attachments->type(); ?><br />
+        Subtype: <?php echo $attachments->subtype(); ?><br />
+        URL: <?php echo $attachments->url(); ?><br />
+        Image: <?php echo $attachments->image( 'thumbnail' ); ?><br />
+        Source: <?php echo $attachments->src( 'full' ); ?><br />
+        Size: <?php echo $attachments->filesize(); ?><br />
+        Title Field: <?php echo $attachments->field( 'title' ); ?><br />
+        Caption Field: Name: <?php echo $attachments->field( 'caption' ); ?>
+      </li>
+    <?php endwhile; ?>
+  </ul>
+<?php endif; ?>`
+
+That snippet will request all of the existing Attachments defined for the current Post within The Loop, and retrieve each itemized property for that Attachment. Using the provided details you're able to integrate the attached Media items in any way you please.
+
+There is a lot more information on [Attachments' GitHub page](https://github.com/jchristopher/attachments). Please contribute!
+
 == Installation ==
 
 1. Download the plugin and extract the files
 1. Upload `attachments` to your `~/wp-content/plugins/` directory
 1. Activate the plugin through the 'Plugins' menu in WordPress
-1. View the Attachments settings (located under the main Settings menu in the WordPress admin) and turn on Attachments for your desired post types
+1. Implement Attachments in your theme's `functions.php` or your own plugin (see **Usage**)
 1. Update your templates where applicable (see **Usage**)
 
 == Frequently Asked Questions ==
@@ -30,6 +68,14 @@ You need to turn on Attachments for your post types. View the Attachments settin
 
 You will need to edit your theme files where applicable. Please reference the **Usage** instructions.
 
+= How do I disable the default Attachments meta box? =
+
+You will need to edit your Attachments configuration. Please reference the **Usage** instructions.
+
+= How do I change the fields for each Attachment? =
+
+You will need to edit your Attachments configuration. Please reference the **Usage** instructions.
+
 = Where are uploads saved? =
 
 Attachments uses WordPress' built in Media library for uploads and storage.
@@ -40,11 +86,22 @@ Attachments uses WordPress' built in Media library for uploads and storage.
 
 == Screenshots ==
 
-1. Attachments meta box as it appears on Posts, Pages, or Custom Post Types
-2. Native WordPress browse modal dialog, slightly customized for Attachments. Upload straight from your computer.
-4. Once assets have been attached, you can customize the title, caption, and order
+1. An Attachments meta box sitting below the content editor
+2. Direct integration with WordPress 3.5+ Media
+3. Attach multiple files at once
+4. Custom fields for each Attachment
+5. Drag and drop to sort
 
 == Changelog ==
+
+= 3.0 =
+* **Major** rewrite. After three years of development, Attachments has been rewritten to make
+      even better use of what WordPress has to offer
+* Utilizes the brand spanking new 3.5 Media workflow
+* Configuration now takes place within your theme or a plugin
+* Multiple meta boxes! You can segment groups of Attachments with new instances, each unique
+* Dynamic fields! You can manipulate which fields each instance uses
+* File type limits. Limit which files are available to Attachments (e.g. images, audio, video)
 
 = 1.6.2.1 =
 * Fixed an issue with Handlebars in Firefox
@@ -177,6 +234,13 @@ Attachments uses WordPress' built in Media library for uploads and storage.
 
 == Upgrade Notice ==
 
+= 3.0 =
+**You will need to update your theme files that use Attachments 3.0**. Version 1.x of Attachments has been *fully deprecated* but is still available. If you would like to continue to use the (no longer supported) 1.x version you may add the following to your wp-config.php:
+
+`define( 'ATTACHMENTS_LEGACY', true ); // force the legacy version of Attachments`
+
+Version 3 is a *major* rewrite. While I've taken precautions in ensuring you won't lose any saved data it is important to back up your databse prior to upgrading in case something goes wrong. This version is a complete rewrite so all legacy data will be left in place, but a migration must take place to match the new data storage model and workflow.
+
 = 1.0.8 =
 As always, be sure to back up your database and files before upgrading.
 
@@ -187,40 +251,128 @@ Attachments are now stored in such a way that removes an in-place limitation on 
 
 Planned feature additions include:
 
-* Update Settings to use official Settings API
+* Additional field type: textarea
+* Additional field type: WYSIWYG
+* Additional field type: checkbox
+* Additional field type: radio
+* Additional field type: select
+* User-defined limiting the number of Attachments per instance
+* User-defined custom field types
+* Additional hooks/actions from top to bottom
+* Shortcode(s)
+* Output templates
 
 == Usage ==
 
-After installing Attachments, you will need to update your template files in order to pull the data to the front end.
+When Attachments is first activated, a default instance is created titled Attachments. It has two fields:
 
-To pull all Attachments for a Post or Page, fire `attachments_get_attachments()`. There is one optional parameter which can force a Post ID if `attachments_get_attachments()` is fired outside The Loop. If used inside The Loop, all Attachments will be pulled for the current Post or Page.
+1. Title
+1. Caption
 
-Firing `attachments_get_attachments()` returns an array consisting of all available Attachments. Currently each Attachment has four pieces of data available:
+If you would like to *disable the default instance* (meta box titled 'Attachments' with a 'Title' and 'Caption' field) add the following to your `wp-config.php`:
 
-* **title** - The attachment Title
-* **caption** - The attachment Caption
-* **id** - The WordPress assigned attachment id (for use with other WordPress media functions)
-* **location** - The attachment URI
-* **mime** - The attachment MIME type (as defined by WordPress)
-* **filesize** - Formatted file size
+`define( 'ATTACHMENTS_DEFAULT_INSTANCE', false );`
 
-Here is a basic implementation:
+You may create instances with your own custom fields by using the `attachments_register` action. To create your own instance add the following to your theme's `functions.php` or your own plugin:
 
 `<?php
-  if( function_exists( 'attachments_get_attachments' ) )
-  {
-    $attachments = attachments_get_attachments();
-    $total_attachments = count( $attachments );
-    if( $total_attachments ) : ?>
-      <ul>
-      <?php for( $i=0; $i<$total_attachments; $i++ ) : ?>
-        <li><?php echo $attachments[$i]['title']; ?></li>
-        <li><?php echo $attachments[$i]['caption']; ?></li>
-        <li><?php echo $attachments[$i]['id']; ?></li>
-        <li><?php echo $attachments[$i]['location']; ?></li>
-        <li><?php echo $attachments[$i]['mime']; ?></li>
-        <li><?php echo $attachments[$i]['filesize']; ?></li>
-      <?php endfor; ?>
-      </ul>
-    <?php endif; ?>
-<?php } ?>`
+function my_attachments( $attachments )
+{
+  $args = array(
+
+    // title of the meta box (string)
+    'label'         => 'My Attachments',
+
+    // all post types to utilize (string|array)
+    'post_type'     => array( 'post', 'page' ),
+
+    // allowed file type(s) (array) (image|video|text|audio|application)
+    'filetype'      => null,  // no filetype limit
+
+    // include a note within the meta box (string)
+    'note'          => 'Attach files here!',
+
+    // text for 'Attach' button (string)
+    'button_text'   => __( 'Attach Files', 'attachments' ),
+
+    // text for modal 'Attach' button (string)
+    'modal_text'    => __( 'Attach', 'attachments' ),
+
+    // fields for this instance (array)
+    'fields'        => array(
+      array(
+        'name'  => 'title',                          // unique field name
+        'type'  => 'text',                           // registered field type (field available in 3.0: text)
+        'label' => __( 'Title', 'attachments' ),     // label to display
+      ),
+      array(
+        'name'  => 'caption',                        // unique field name
+        'type'  => 'text',                           // registered field type (field available in 3.0: text)
+        'label' => __( 'Caption', 'attachments' ),   // label to display
+      ),
+      array(
+        'name'  => 'copyright',                      // unique field name
+        'type'  => 'text',                           // registered field type (field available in 3.0: text)
+        'label' => __( 'Copyright', 'attachments' ), // label to display
+      ),
+    ),
+
+  );
+
+  $attachments->register( 'my_attachments', $args ); // unique instance name
+}
+
+add_action( 'attachments_register', 'my_attachments' );`
+
+Once your instances are set up and working, you'll also need to edit your theme's template files to pull the data to the front end. To retrieve the Attachments for the current post, add this within The Loop:
+
+`<?php $attachments = new Attachments( 'attachments' ); /* pass the instance name */ ?>
+<?php if( $attachments->exist() ) : ?>
+  <h3>Attachments</h3>
+  <ul>
+    <?php while( $attachment = $attachments->get() ) : ?>
+      <li>
+        <pre><?php print_r( $attachment ); ?></pre>
+      </li>
+    <?php endwhile; ?>
+  </ul>
+<?php endif; ?>`
+
+If you want to get the Attachments for a post **outside The Loop**, add a second parameter with the post ID when instantiating Attachments:
+
+`<?php
+  // retrieve all Attachments for the 'attachments' instance of post 123
+  $attachments = new Attachments( 'attachments', 123 );
+?>
+<?php if( $attachments->exist() ) : ?>
+  <h3>Attachments</h3>
+  <ul>
+    <?php while( $attachment = $attachments->get() ) : ?>
+      <li>
+        <pre><?php print_r( $attachment ); ?></pre>
+      </li>
+    <?php endwhile; ?>
+  </ul>
+<?php endif; ?>`
+
+You can also retrieve various attributes of the current Attachment using these utility functions:
+
+`<?php $attachments = new Attachments( 'attachments' ); /* pass the instance name */ ?>
+<?php if( $attachments->exist() ) : ?>
+  <h3>Attachments</h3>
+  <ul>
+    <?php while( $attachments->get() ) : ?>
+      <li>
+        ID: <?php echo $attachments->id(); ?><br />
+        Type: <?php echo $attachments->type(); ?><br />
+        Subtype: <?php echo $attachments->subtype(); ?><br />
+        URL: <?php echo $attachments->url(); ?><br />
+        Image: <?php echo $attachments->image( 'thumbnail' ); ?><br />
+        Source: <?php echo $attachments->src( 'full' ); ?><br />
+        Size: <?php echo $attachments->filesize(); ?><br />
+        Title Field: <?php echo $attachments->field( 'title' ); ?><br />
+        Caption Field: Name: <?php echo $attachments->field( 'caption' ); ?>
+      </li>
+    <?php endwhile; ?>
+  </ul>
+<?php endif; ?>`
