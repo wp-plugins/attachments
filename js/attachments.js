@@ -1,146 +1,90 @@
+function attachments_uniqid (prefix, more_entropy) {
+  // +   original by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+  // +    revised by: Kankrelune (http://www.webfaktory.info/)
+  // %        note 1: Uses an internal counter (in php_js global) to avoid collision
+  // *     example 1: uniqid();
+  // *     returns 1: 'a30285b160c14'
+  // *     example 2: uniqid('foo');
+  // *     returns 2: 'fooa30285b1cd361'
+  // *     example 3: uniqid('bar', true);
+  // *     returns 3: 'bara20285b23dfd1.31879087'
+  if (typeof prefix == 'undefined') {
+    prefix = "";
+  }
+
+  var retId;
+  var formatSeed = function (seed, reqWidth) {
+    seed = parseInt(seed, 10).toString(16); // to hex str
+    if (reqWidth < seed.length) { // so long we split
+      return seed.slice(seed.length - reqWidth);
+    }
+    if (reqWidth > seed.length) { // so short we pad
+      return Array(1 + (reqWidth - seed.length)).join('0') + seed;
+    }
+    return seed;
+  };
+
+  // BEGIN REDUNDANT
+  if (!this.php_js) {
+    this.php_js = {};
+  }
+  // END REDUNDANT
+  if (!this.php_js.uniqidSeed) { // init seed with big random int
+    this.php_js.uniqidSeed = Math.floor(Math.random() * 0x75bcd15);
+  }
+  this.php_js.uniqidSeed++;
+
+  retId = prefix; // start with prefix, add current milliseconds hex string
+  retId += formatSeed(parseInt(new Date().getTime() / 1000, 10), 8);
+  retId += formatSeed(this.php_js.uniqidSeed, 5); // add seed hex string
+  if (more_entropy) {
+    // for more entropy we add a float lower to 10
+    retId += (Math.random() * 10).toFixed(8).toString();
+  }
+
+  return retId;
+}
+
+function attachments_isset () {
+  // http://kevin.vanzonneveld.net
+  // +   original by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+  // +   improved by: FremyCompany
+  // +   improved by: Onno Marsman
+  // +   improved by: Rafał Kukawski
+  // *     example 1: isset( undefined, true);
+  // *     returns 1: false
+  // *     example 2: isset( 'Kevin van Zonneveld' );
+  // *     returns 2: true
+  var a = arguments,
+    l = a.length,
+    i = 0,
+    undef;
+
+  if (l === 0) {
+    throw new Error('Empty isset');
+  }
+
+  while (i !== l) {
+    if (a[i] === undef || a[i] === null) {
+      return false;
+    }
+    i++;
+  }
+  return true;
+}
+
 jQuery(document).ready(function($){
-    var context = false;
-    var thickbox_modder;
-
-    // init sortability
-    if($('div#attachments-list ul:data(sortable)').length==0&&$('div#attachments-list ul li').length>0){
-        $('div#attachments-list ul').sortable({
-            containment: 'parent',
-            stop: function(e, ui) {
-                $('#attachments-list ul li').each(function(i, id) {
-                    $(this).find('input.attachment_order').val(i+1);
-                });
-            }
-        });
-    }
-
-    // delete link handler
-    function attachments_hook_delete_links(theparent){
-        attachment_parent = theparent.parent().parent().parent();
-        attachment_parent.slideUp(function() {
-            attachment_parent.remove();
-            $('#attachments-list ul li').each(function(i, id) {
-                $(this).find('input.attachment_order').val(i+1);
-            });
-            if($('div#attachments-list li').length == 0) {
-                $('#attachments-list').slideUp(function() {
-                    $('#attachments-list').hide();
-                });
-            }
-        });
-    }
-
-    // Hook our delete links
-    if(parseFloat($.fn.jquery)>=1.7){
-        // 'live' is deprecated
-        $(document).on("click", "span.attachment-delete a", function(event){
-            theparent = $(this);
-            attachments_hook_delete_links(theparent);
-            return false;
-        });
-    }else{
-        $('span.attachment-delete a').live('click',function(event){
-            theparent = $(this);
-            attachments_hook_delete_links(theparent);
-            return false;
-        });
-    }
-
-
-
-    // thickbox handler
-    if(parseFloat($.fn.jquery)>=1.7){
-        // 'live' is deprecated
-        $(document).on("click", "a#attachments-thickbox", function(event){
-            event.preventDefault();
-            theparent = $(this);
-            attachments_handle_thickbox(event,theparent);
-            return false;
-        });
-    }else{
-        $('a#attachments-thickbox').live('click',function(event){
-            event.preventDefault();
-            theparent = $(this);
-            attachments_handle_thickbox(event,theparent);
-            return false;
-        });
-    }
-
-    function attachments_handle_thickbox(event,theparent){
-        var href = theparent.attr('href'), width = jQuery(window).width(), H = jQuery(window).height(), W = ( 720 < width ) ? 720 : width;
-        if ( ! href ) return;
-        href = href.replace(/&width=[0-9]+/g, '');
-        href = href.replace(/&height=[0-9]+/g, '');
-        theparent.attr( 'href', href + '&width=' + ( W - 80 ) + '&height=' + ( H - 85 ) );
-        context = true;
-        thickbox_modder = setInterval( function(){
-            if( context ){
-                modify_thickbox();
-            }
-        }, 500 );
-        tb_show('Attach a file', event.target.href, false);
-        return false;
-    }
-
-    // handle the attachment process
-    function handle_attach(title,caption,id,thumb){
-        var source   = $('#attachment-template').html();
-        var template = Handlebars.compile(source);
-
-        var order = $('#attachments-list > ul > li').length + 1;
-
-        $('div#attachments-list ul', top.document).append(template({name:title,title:title,caption:caption,id:id,thumb:thumb,order:order}));
-
-        $('#attachments-list > ul > li').each(function(i, id) {
-            $(this).find('input.attachment_order').val(i+1);
-        });
-
-        return false;
-    }
-
-
-    function modify_thickbox(){
-
-        the_thickbox = jQuery('#TB_iframeContent').contents();
-
-        // our new click handler for the attach button
-        the_thickbox.find('td.savesend input').unbind('click').click(function(e){
-
-            jQuery(this).after('<span class="attachments-attached">Attached!</span>');
-
-            // grab our meta as per the Media library
-            var wp_media_meta       = $(this).parent().parent().parent();
-            var wp_media_title      = wp_media_meta.find('tr.post_title td.field input').val();
-            var wp_media_caption    = wp_media_meta.find('tr.post_excerpt td.field input').val();
-            var wp_media_id         = wp_media_meta.find('td.imgedit-response').attr('id').replace('imgedit-response-','');
-            var wp_media_thumb      = wp_media_meta.parent().find('img.thumbnail').attr('src');
-
-            handle_attach(wp_media_title,wp_media_caption,wp_media_id,wp_media_thumb);
-
-            the_thickbox.find('span.attachments-attached').delay(1000).fadeOut('fast');
-            return false;
-        });
-        // update button
-        if(the_thickbox.find('.media-item .savesend input[type=submit], #insertonlybutton').length){
-            the_thickbox.find('.media-item .savesend input[type=submit], #insertonlybutton').val('Attach');
-        }
-        if(the_thickbox.find('#tab-type_url').length){
-            the_thickbox.find('#tab-type_url').hide();
-        }
-        if(the_thickbox.find('tr.post_title').length){
-            // we need to ALWAYS get the fullsize since we're retrieving the guid
-            // if the user inserts an image somewhere else and chooses another size, everything breaks
-            the_thickbox.find('tr.image-size input[value="full"]').prop('checked', true);
-            the_thickbox.find('tr.post_title,tr.image_alt,tr.post_excerpt,tr.image-size,tr.post_content,tr.url,tr.align,tr.submit>td>a.del-link').hide();
-        }
-
-        // was the thickbox closed?
-        if(the_thickbox.length==0 && context){
-            clearInterval(thickbox_modder);
-            context = false;
-        }
-    }
-
+    $( '.attachments-container' ).sortable({
+        placeholder: 'attachments-attachment-highlight',
+        opacity: 0.5,
+        forceHelperSize: true,
+        forcePlaceholderSize: true,
+        items: '> .attachments-attachment',
+        scroll: true,
+        tolerance: 'intersect',
+        axis: 'y',
+        containment: 'parent',
+        handle: '.attachments-handle img'
+    });
+    $( '.attachments-container' ).disableSelection();
 });
-
-
