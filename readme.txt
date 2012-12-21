@@ -4,7 +4,7 @@ Donate link: http://mondaybynoon.com/donate/
 Tags: post, page, posts, pages, images, PDF, doc, Word, image, jpg, jpeg, picture, pictures, photos, attachment
 Requires at least: 3.0
 Tested up to: 3.5
-Stable tag: 3.0.5
+Stable tag: 3.0.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -40,7 +40,7 @@ The idea behind Attachments is to give developers the ability to directly associ
         Source: <?php echo $attachments->src( 'full' ); ?><br />
         Size: <?php echo $attachments->filesize(); ?><br />
         Title Field: <?php echo $attachments->field( 'title' ); ?><br />
-        Caption Field: Name: <?php echo $attachments->field( 'caption' ); ?>
+        Caption Field: <?php echo $attachments->field( 'caption' ); ?>
       </li>
     <?php endwhile; ?>
   </ul>
@@ -93,6 +93,14 @@ Attachments uses WordPress' built in Media library for uploads and storage.
 5. Drag and drop to sort
 
 == Changelog ==
+
+= 3.0.6 =
+* Fixed a possible JavaScript error if an Attachment that's an image doesn't have a proper thumbnail URL
+* Added a total() method that will return the number of Attachments for the current instance
+* When requesting the image() for a non-image Attachment, the WordPress-defined icon will be returned
+* Added an icon() method that will return the WordPress-defined icon for the Attachment
+* Cleaned up a PHP Warning when trying to save for an undefined field type
+* Fixed an issue where template tags would be output for non-image Attachments after saving
 
 = 3.0.5 =
 * Fixed a regression in handling Custom Post Type names that would too aggressively interfere with instance regustration
@@ -381,6 +389,7 @@ You can also retrieve various attributes of the current Attachment using these u
 `<?php $attachments = new Attachments( 'attachments' ); /* pass the instance name */ ?>
 <?php if( $attachments->exist() ) : ?>
   <h3>Attachments</h3>
+  <p>Total Attachments: <?php echo $attachments->total(); ?></p>
   <ul>
     <?php while( $attachments->get() ) : ?>
       <li>
