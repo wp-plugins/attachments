@@ -56,7 +56,7 @@ if ( !class_exists( 'Attachments' ) ) :
             global $_wp_additional_image_sizes;
 
             // establish our environment variables
-            $this->version  = '3.0.6';
+            $this->version  = '3.0.7';
             $this->url      = ATTACHMENTS_URL;
             $this->dir      = ATTACHMENTS_DIR;
 
@@ -684,6 +684,12 @@ if ( !class_exists( 'Attachments' ) ) :
                     }
                 }
             }
+
+            // WordPress sanitizes post type names when registering, so we will too
+            foreach( $params['post_type'] as $key => $post_type )
+                $params['post_type'][$key] = sanitize_key( $post_type );
+
+            // print_r($params['post_type']);
 
             // make sure the instance name is proper
             $instance = str_replace( '-', '_', sanitize_title( $name ) );
