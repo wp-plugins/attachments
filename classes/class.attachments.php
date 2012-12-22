@@ -56,7 +56,7 @@ if ( !class_exists( 'Attachments' ) ) :
             global $_wp_additional_image_sizes;
 
             // establish our environment variables
-            $this->version  = '3.0.7';
+            $this->version  = '3.0.8';
             $this->url      = ATTACHMENTS_URL;
             $this->dir      = ATTACHMENTS_DIR;
 
@@ -547,7 +547,8 @@ if ( !class_exists( 'Attachments' ) ) :
         function get_field_types()
         {
             $field_types = array(
-                'text' => ATTACHMENTS_DIR . 'classes/fields/class.field.text.php'
+                'text'      => ATTACHMENTS_DIR . 'classes/fields/class.field.text.php',
+                'textarea'  => ATTACHMENTS_DIR . 'classes/fields/class.field.textarea.php',
             );
 
             // support custom field types
