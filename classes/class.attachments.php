@@ -56,7 +56,7 @@ if ( !class_exists( 'Attachments' ) ) :
             global $_wp_additional_image_sizes;
 
             // establish our environment variables
-            $this->version  = '3.0.8.2';
+            $this->version  = '3.1';
             $this->url      = ATTACHMENTS_URL;
             $this->dir      = ATTACHMENTS_DIR;
 
@@ -67,6 +67,8 @@ if ( !class_exists( 'Attachments' ) ) :
             // deal with our legacy issues if the user hasn't dismissed or migrated already
             if( false == get_option( 'attachments_migrated' ) && false == get_option( 'attachments_ignore_migration' ) )
             {
+                // TODO: this will not retrieve posts that have exclude_from_search = true
+                // TODO: make this reusable elsewhere
                 $legacy         = new WP_Query( 'post_type=any&post_status=any&posts_per_page=1&meta_key=_attachments' );
                 $this->legacy   = empty( $legacy->found_posts ) ? false : true;
             }
@@ -89,7 +91,7 @@ if ( !class_exists( 'Attachments' ) ) :
             add_action( 'init',                       array( $this, 'do_actions_filters' ) );
 
             // determine which instances apply to the current post type
-            add_action( 'init',                       array( $this, 'set_instances_for_current_post_type' ), 999 );
+            add_action( 'init',                       array( $this, 'set_instances_for_current_post_type' ) );
 
             add_action( 'add_meta_boxes',             array( $this, 'meta_box_init' ) );
 
@@ -101,6 +103,8 @@ if ( !class_exists( 'Attachments' ) ) :
 
             // with version 3 we'll be giving at least one admin notice
             add_action( 'admin_notices',              array( $this, 'admin_notice' ) );
+
+            add_action( 'admin_print_footer_scripts', array( $this, 'field_assets' ) );
 
             // set our attachments if necessary
             if( !is_null( $instance ) )
@@ -406,7 +410,7 @@ if ( !class_exists( 'Attachments' ) ) :
 
             ?>
 
-            <div id="attachments-<?php echo $instance->name; ?>">
+            <div id="attachments-<?php echo $instance->name; ?>" class="attachments-parent-container">
                 <?php if( !empty( $instance->note ) ) : ?>
                     <div class="attachments-note"><?php echo apply_filters( 'the_content', $instance->note ); ?></div>
                 <?php endif; ?>
@@ -505,6 +509,8 @@ if ( !class_exists( 'Attachments' ) ) :
                                 // append the template
                                 $element.find('.attachments-container').append(template(templateData));
 
+                                $('body').trigger('attachments/new');
+
                                 // if it wasn't an image we need to ditch the dimensions
                                 if(!attachments_isset(attachment.attributes.width)||!attachments_isset(attachment.attributes.height)){
                                     $element.find('.attachments-attachment:last .dimensions').hide();
@@ -549,29 +555,39 @@ if ( !class_exists( 'Attachments' ) ) :
             $field_types = array(
                 'text'      => ATTACHMENTS_DIR . 'classes/fields/class.field.text.php',
                 'textarea'  => ATTACHMENTS_DIR . 'classes/fields/class.field.textarea.php',
+                'wysiwyg'   => ATTACHMENTS_DIR . 'classes/fields/class.field.wysiwyg.php',
             );
 
             // support custom field types
             // $field_types = apply_filters( 'attachments_fields', $field_types );
 
+            $field_index = 0;
             foreach( $field_types as $type => $path )
             {
-                // store the registered classes so we can single out what gets added
-                $classes_before = get_declared_classes();
-
                 // proceed with inclusion
                 if( file_exists( $path ) )
                 {
                     // include the file
                     include_once( $path );
 
+                    // store the registered classes so we can single out what gets added
+                    $existing_classes = get_declared_classes();
+
+                    // we're going to use our Attachments class as a reference because
+                    // during subsequent instantiations of Attachments (e.g. within template files)
+                    // these field classes WILL NOT be added to the array again because
+                    // we're using include_once() so that strategy is no longer useful
+
                     // determine it's class
-                    $classes = get_declared_classes();
-                    // the field's class is last in line
-                    $field_class = end( $classes );
+                    $flag = array_search( 'Attachments_Field', $existing_classes );
+
+                    // the field's class is next
+                    $field_class = $existing_classes[$flag + $field_index + 1];
 
                     // create our link using our new field class
                     $field_types[$type] = $field_class;
+
+                    $field_index++;
                 }
             }
 
@@ -690,7 +706,6 @@ if ( !class_exists( 'Attachments' ) ) :
             foreach( $params['post_type'] as $key => $post_type )
                 $params['post_type'][$key] = sanitize_key( $post_type );
 
-            // print_r($params['post_type']);
 
             // make sure the instance name is proper
             $instance = str_replace( '-', '_', sanitize_title( $name ) );
@@ -808,7 +823,7 @@ if ( !class_exists( 'Attachments' ) ) :
                 $value  = ( isset( $attachment->fields->$name ) ) ? $attachment->fields->$name : null;
 
                 $field  = new $this->fields[$type]( $name, $label, $value );
-                $field->Pvalue = $field->format_value_for_input( $field->value );
+                $field->value = $field->format_value_for_input( $field->value );
 
                 // does this field already have a unique ID?
                 $uid = ( isset( $attachment->uid ) ) ? $attachment->uid : null;
@@ -921,6 +936,33 @@ if ( !class_exists( 'Attachments' ) ) :
 
 
 
+        function field_assets()
+        {
+            // all metaboxes have been put in place, we can now determine which field assets need to be included
+
+            // first we'll get a list of the field types on screen
+            $fieldtypes = array();
+            foreach( $this->instances_for_post_type as $instance )
+            {
+                foreach( $this->instances[$instance]['fields'] as $field )
+                {
+                    $fieldtypes[] = $field['type'];
+                }
+            }
+
+            // we only want to dump out assets once for each field type
+            $fieldtypes = array_unique( $fieldtypes );
+
+            // loop through and dump out all the assets
+            foreach( $fieldtypes as $fieldtype )
+            {
+                $field = new $this->fields[$fieldtype];
+                $field->assets();
+            }
+        }
+
+
+
         /**
          * Outputs all necessary Backbone templates
          * Each Backbone template includes each field present in an instance
@@ -990,8 +1032,24 @@ if ( !class_exists( 'Attachments' ) ) :
 
                         foreach( $attachment['fields'] as $key => $field_value )
                         {
-                            // slashes were already added so we're going to strip them and encode ourselves
-                            $attachment['fields'][$key] = htmlentities( stripslashes( $field_value ), ENT_QUOTES, 'UTF-8' );
+                            // take care of our returns
+                            $field_value = str_replace( "\r\n", "\n", $field_value );
+                            $field_value = str_replace( "\r", "\n", $field_value );
+
+                            // we dont want to strip out our newlines so we're going to flag them
+                            $field_value = str_replace("\n", "%%ATTACHMENTS_NEWLINE%%", $field_value );
+
+                            // slashes were already added so we're going to strip them
+                            $field_value = stripslashes( $field_value );
+
+                            // put back our newlines
+                            $field_value = str_replace("%%ATTACHMENTS_NEWLINE%%", "\\n", $field_value );
+
+                            // encode the whole thing
+                            $field_value = htmlentities( $field_value, ENT_QUOTES, 'UTF-8' );
+
+                            // encode things properly
+                            $attachment['fields'][$key] = $field_value;
                         }
                     }
 
@@ -1036,6 +1094,7 @@ if ( !class_exists( 'Attachments' ) ) :
                 return;
             }
 
+
             // grab our JSON and decode it
             $attachments_json   = get_post_meta( $post_id, $this->meta_key, true );
             $attachments_raw    = is_string( $attachments_json ) ? json_decode( $attachments_json ) : false;
@@ -1062,7 +1121,6 @@ if ( !class_exists( 'Attachments' ) ) :
                                         break;
                                     }
                                 }
-
                                 if( isset( $this->fields[$type] ) )
                                 {
                                     // we need to decode the html entities that were encoded for the save
@@ -1073,6 +1131,11 @@ if ( !class_exists( 'Attachments' ) ) :
                                     // the type doesn't exist
                                     $attachment->fields->$key = false;
                                 }
+                            }
+                            else
+                            {
+                                // this was a theme file request, just grab it
+                                $attachment->fields->$key = html_entity_decode( $attachment->fields->$key, ENT_QUOTES, 'UTF-8' );
                             }
                         }
                     }
