@@ -32,6 +32,8 @@ if ( !class_exists( 'Attachments' ) ) :
         private $fields;                    // stores all registered field types
         private $attachments;               // stores all of the Attachments for the given instance
 
+        private $legacy             = false;            // whether or not there is legacy Attachments data
+        private $legacy_pro         = false;            // whether or not there is legacy Attachment Pro data
         private $image_sizes        = array( 'full' );  // store all registered image sizes
         private $default_instance   = true;             // use the default instance?
         private $attachments_ref    = -1;               // flags where a get() loop last did it's thing
@@ -56,7 +58,8 @@ if ( !class_exists( 'Attachments' ) ) :
             global $_wp_additional_image_sizes;
 
             // establish our environment variables
-            $this->version  = '3.1.2';
+
+            $this->version  = '3.1.3';
             $this->url      = ATTACHMENTS_URL;
             $this->dir      = ATTACHMENTS_DIR;
 
@@ -64,51 +67,92 @@ if ( !class_exists( 'Attachments' ) ) :
             include_once( ATTACHMENTS_DIR . 'upgrade.php' );
             include_once( ATTACHMENTS_DIR . '/classes/class.field.php' );
 
+            // include our fields
+            $this->fields = $this->get_field_types();
+
             // deal with our legacy issues if the user hasn't dismissed or migrated already
-            if( false == get_option( 'attachments_migrated' ) && false == get_option( 'attachments_ignore_migration' ) )
-            {
-                // TODO: this will not retrieve posts that have exclude_from_search = true
-                // TODO: make this reusable elsewhere
-                $legacy         = new WP_Query( 'post_type=any&post_status=any&posts_per_page=1&meta_key=_attachments' );
-                $this->legacy   = empty( $legacy->found_posts ) ? false : true;
-            }
-            else
-            {
-                $this->legacy   = false;
-            }
+            $this->check_for_legacy_data();
 
             // set our image sizes
             $this->image_sizes = array_merge( $this->image_sizes, get_intermediate_image_sizes() );
 
-            // include our fields
-            $this->fields = $this->get_field_types();
-
             // hook into WP
-            add_action( 'admin_enqueue_scripts',      array( $this, 'assets' ), 999, 1 );
-            add_action( 'admin_enqueue_scripts',      array( $this, 'admin_pointer' ), 999 );
+            add_action( 'admin_enqueue_scripts',        array( $this, 'assets' ), 999, 1 );
+            add_action( 'admin_enqueue_scripts',        array( $this, 'admin_pointer' ), 999 );
 
             // register our user-defined instances
-            add_action( 'init',                       array( $this, 'do_actions_filters' ) );
+            add_action( 'init',                         array( $this, 'do_actions_filters' ) );
 
             // determine which instances apply to the current post type
-            add_action( 'init',                       array( $this, 'set_instances_for_current_post_type' ) );
+            add_action( 'init',                         array( $this, 'set_instances_for_current_post_type' ) );
 
-            add_action( 'add_meta_boxes',             array( $this, 'meta_box_init' ) );
-
-            add_action( 'admin_footer',               array( $this, 'admin_footer' ) );
-
-            add_action( 'save_post',                  array( $this, 'save' ) );
-
-            add_action( 'admin_menu',                 array( $this, 'admin_page' ) );
+            add_action( 'add_meta_boxes',               array( $this, 'meta_box_init' ) );
+            add_action( 'admin_footer',                 array( $this, 'admin_footer' ) );
+            add_action( 'save_post',                    array( $this, 'save' ) );
+            add_action( 'admin_menu',                   array( $this, 'admin_page' ) );
 
             // with version 3 we'll be giving at least one admin notice
-            add_action( 'admin_notices',              array( $this, 'admin_notice' ) );
+            add_action( 'admin_notices',                array( $this, 'admin_notice' ) );
 
-            add_action( 'admin_print_footer_scripts', array( $this, 'field_assets' ) );
+            add_action( 'admin_head',                   array( $this, 'field_inits' ) );
+            add_action( 'admin_print_footer_scripts',   array( $this, 'field_assets' ) );
 
             // set our attachments if necessary
             if( !is_null( $instance ) )
                 $this->attachments = $this->get_attachments( $instance, $post_id );
+        }
+
+
+
+        /**
+         * Stores whether or not this environment has active legacy Attachments/Pro data
+         *
+         * @since 3.1.3
+         */
+        function check_for_legacy_data()
+        {
+            // deal with our legacy issues if the user hasn't dismissed or migrated already
+            if( false == get_option( 'attachments_migrated' ) && false == get_option( 'attachments_ignore_migration' ) )
+            {
+                $legacy_attachments_settings = get_option( 'attachments_settings' );
+
+                if( $legacy_attachments_settings && is_array( $legacy_attachments_settings['post_types'] ) && count( $legacy_attachments_settings['post_types'] ) )
+                {
+                    // we have legacy settings, so we're going to use the post types
+                    // that Attachments is currently utilizing
+
+                    // the keys are the actual CPT names, so we need those
+                    foreach( $legacy_attachments_settings['post_types'] as $post_type => $value )
+                        if( $value )
+                            $post_types[] = $post_type;
+
+                    // set up our WP_Query args to grab anything with legacy data
+                    $args = array(
+                            'post_type'         => isset( $post_types ) ? $post_types : array(),
+                            'post_status'       => 'any',
+                            'posts_per_page'    => 1,
+                            'meta_key'          => '_attachments',
+                        );
+
+                    $legacy         = new WP_Query( $args );
+                    $this->legacy   = empty( $legacy->found_posts ) ? false : true;
+                }
+            }
+
+            // deal with our legacy Pro issues if the user hasn't dismissed or migrated already
+            if( false == get_option( 'attachments_pro_migrated' ) && false == get_option( 'attachments_pro_ignore_migration' ) )
+            {
+                // set up our WP_Query args to grab anything (really anything) with legacy data
+                $args = array(
+                        'post_type'         => get_post_types(),
+                        'post_status'       => 'any',
+                        'posts_per_page'    => 1,
+                        'meta_key'          => '_attachments_pro',
+                    );
+
+                $legacy_pro         = new WP_Query( $args );
+                $this->legacy_pro   = empty( $legacy_pro->found_posts ) ? false : true;
+            }
         }
 
 
@@ -496,7 +540,7 @@ if ( !class_exists( 'Attachments' ) ) :
 
                                 // only thumbnails have sizes which is what we're on the hunt for
                                 if(attachments_isset(attachment.attributes.sizes)){
-	                                if(attachments_isset(attachment.attributes.sizes.thumbnail)){
+                                    if(attachments_isset(attachment.attributes.sizes.thumbnail)){
                                         if(attachments_isset(attachment.attributes.sizes.thumbnail.url)){
                                             // use the thumbnail
                                             attachment.attributes.attachment_thumb = attachment.attributes.sizes.thumbnail.url;
@@ -936,19 +980,26 @@ if ( !class_exists( 'Attachments' ) ) :
 
 
 
+        /**
+         * Callback to fire the assets() function for reach registered field
+         *
+         * @since 3.1
+         */
         function field_assets()
         {
+            global $post;
+
+            // we only want to enqueue if we're on an edit screen and it's applicable
+            if( empty( $this->instances_for_post_type ) || empty( $post ) )
+                return;
+
             // all metaboxes have been put in place, we can now determine which field assets need to be included
 
             // first we'll get a list of the field types on screen
             $fieldtypes = array();
             foreach( $this->instances_for_post_type as $instance )
-            {
                 foreach( $this->instances[$instance]['fields'] as $field )
-                {
                     $fieldtypes[] = $field['type'];
-                }
-            }
 
             // we only want to dump out assets once for each field type
             $fieldtypes = array_unique( $fieldtypes );
@@ -958,6 +1009,40 @@ if ( !class_exists( 'Attachments' ) ) :
             {
                 $field = new $this->fields[$fieldtype];
                 $field->assets();
+            }
+        }
+
+
+
+        /**
+         * Callback to fire the init() function for reach registered field
+         *
+         * @since 3.1
+         */
+        function field_inits()
+        {
+            global $post;
+
+            // we only want to enqueue if we're on an edit screen and it's applicable
+            if( empty( $this->instances_for_post_type ) || empty( $post ) )
+                return;
+
+            // all metaboxes have been put in place, we can now determine which field assets need to be included
+
+            // first we'll get a list of the field types on screen
+            $fieldtypes = array();
+            foreach( $this->instances_for_post_type as $instance )
+                foreach( $this->instances[$instance]['fields'] as $field )
+                    $fieldtypes[] = $field['type'];
+
+            // we only want to dump out assets once for each field type
+            $fieldtypes = array_unique( $fieldtypes );
+
+            // loop through and dump out all the assets
+            foreach( $fieldtypes as $fieldtype )
+            {
+                $field = new $this->fields[$fieldtype];
+                $field->init();
             }
         }
 
