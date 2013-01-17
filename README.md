@@ -74,6 +74,12 @@ Version 3 is a **major** rewrite. While I've taken precautions in ensuring you w
 
 ## Usage
 
+Attachments ships with a `Settings` screen (found under the `Settings` menu in the main WordPress admin navigation) that facilitates data migration from version 1.x and also offers some code snippets. If you would like to **disable the Settings screen** add the following to your theme's `functions.php`:
+
+```php
+define( 'ATTACHMENTS_SETTINGS_SCREEN', false ); // disable the Settings screen
+```
+
 When Attachments is first activated, a default instance is created titled Attachments. It has two fields:
 
 1. Title
@@ -116,22 +122,26 @@ function my_attachments( $attachments )
      * Fields for the instance are stored in an array. Each field consists of
      * an array with three keys: name, type, label.
      *
-     * name  - (string) The field name used. No special characters.
-     * type  - (string) The registered field type.
+     * name    - (string) The field name used. No special characters.
+     * type    - (string) The registered field type.
      *                  Fields available: text, textarea, wysiwyg
-     * label - (string) The label displayed for the field.
+     * label   - (string) The label displayed for the field.
+     * caption - (string) The default WordPress metadata to use when initially adding the Attachment
+     *                  Defaults available: title, caption, alt, description
      */
 
     'fields'        => array(
       array(
-        'name'  => 'title',                          // unique field name
-        'type'  => 'text',                           // registered field type
-        'label' => __( 'Title', 'attachments' ),     // label to display
+        'name'      => 'title',                         // unique field name
+        'type'      => 'text',                          // registered field type
+        'label'     => __( 'Title', 'attachments' ),    // label to display
+        'default'   => 'title',                         // default value upon selection
       ),
       array(
-        'name'  => 'caption',                        // unique field name
-        'type'  => 'wysiwyg',                        // registered field type
-        'label' => __( 'Caption', 'attachments' ),   // label to display
+        'name'      => 'caption',                       // unique field name
+        'type'      => 'textarea',                      // registered field type
+        'label'     => __( 'Caption', 'attachments' ),  // label to display
+        'default'   => 'caption',                       // default value upon selection
       )
     ),
 
@@ -203,6 +213,18 @@ You can also retrieve various attributes of the current Attachment directly usin
 <?php endif; ?>
 ```
 
+If you don't want to use the above implementation to loop through your Attachments, can also retrieve them explicitly:
+
+```php
+<?php $attachments = new Attachments( 'attachments' ); ?>
+<?php if( $attachments->exist() ) : ?>
+  <?php if( $attachment = $attachments->get_single( 0 ) ) : ?>
+    <h3>Attachment at index 0:</h3>
+    <pre><?php print_r( $attachment ); ?></pre>
+  <?php endif; ?>
+<?php endif; ?>
+```
+
 ## Screenshots
 
 ##### An Attachments meta box sitting below the content editor
@@ -244,11 +266,17 @@ Attachments uses WordPress' built in Media library for uploads and storage.
 
 #### I lost my Attachments after upgrading!
 
-***DO NOT update any Post/Page/CPT with Attachments***, the data has not been lost. Please [contact me](http://mondaybynoon.com/contact/) to begin a bugfix
+***DO NOT update any Post/Page/CPT with Attachments***, the data has not been lost. Please **[Upgrade notice](#upgrade-notice)**.
 
 ## Changelog
 
 <dl>
+
+    <dt>3.2</dt>
+    <dd>Added option to disable the Settings screen</dd>
+    <dd>Added the ability to set a default for fields using the metadata that exists in WordPress. Available defaults include: title, caption, alt, and description. If set, the metadata for the correlating field will be used as the field default when initially adding an Attachment from the Media modal. Only applies to text, textarea, and wysiwyg fields.</dd>
+    <dd>Added a `get_single()` method that allows you to specifically retrieve a single Attachment</dd>
+    <dd>Clarified some documentation</dd>
 
     <dt>3.1.4</dt>
     <dd>Changed 'Delete' to 'Remove' so as to not make it sound like the file itself would be deleted from Media (props Lane Goldberg)</dd>
