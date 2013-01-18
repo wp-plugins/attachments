@@ -90,6 +90,10 @@ jQuery(document).ready(function($){
         },
         stop: function(event, ui) {
             $(document).trigger('attachments/sortable_stop');
-        },
+        }
+    });
+    $('body').on('click','.attachments-attachment-fields-toggle > a', function(){
+        $(this).parents('.attachments-attachment').find('.attachments-fields').toggle();
+        return false;
     });
 });

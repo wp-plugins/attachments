@@ -59,7 +59,7 @@ if ( !class_exists( 'Attachments' ) ) :
 
             // establish our environment variables
 
-            $this->version  = '3.3';
+            $this->version  = '3.3.1';
             $this->url      = ATTACHMENTS_URL;
             $this->dir      = ATTACHMENTS_DIR;
 
@@ -601,8 +601,10 @@ if ( !class_exists( 'Attachments' ) ) :
                     $instance_name      = $instance;
                     $instance           = (object) $this->instances[$instance];
                     $instance->name     = $instance_name;
+                    $position           = isset($instance->position) ? $instance->position : 'normal';
+                    $priority           = isset($instance->priority) ? $instance->priority : 'high';
 
-                    add_meta_box( 'attachments-' . $instance_name, __( esc_attr( $instance->label ) ), array( $this, 'meta_box_markup' ), $this->get_post_type(), 'normal', 'high', array( 'instance' => $instance, 'setup_nonce' => !$nonce_sent ) );
+                    add_meta_box( 'attachments-' . $instance_name, __( esc_attr( $instance->label ) ), array( $this, 'meta_box_markup' ), $this->get_post_type(), $position, $priority, array( 'instance' => $instance, 'setup_nonce' => !$nonce_sent ) );
 
                     $nonce_sent = true;
                 }
@@ -727,6 +729,11 @@ if ( !class_exists( 'Attachments' ) ) :
 
                                 // append the template
                                 $element.find('.attachments-container').append(template(templateData));
+
+                                // if we're in a sidebar we DO want to show the fields which are normally hidden on load via CSS
+                                if($element.parents('#side-sortables')){
+                                    $element.find('.attachments-attachment:last .attachments-fields').show();
+                                }
 
                                 // see if we need to set a default
                                 // TODO: can we tie this into other field types (select, radio, checkbox)?
@@ -889,6 +896,12 @@ if ( !class_exists( 'Attachments' ) ) :
 
                     // all post types to utilize (string|array)
                     'post_type'     => array( 'post', 'page' ),
+
+                    // meta box position (string) (normal, side or advanced)
+                    'position'      => 'normal',
+
+                    // meta box priority (string) (high, default, low, core)
+                    'priority'      => 'high',
 
                     // maximum number of Attachments (int) (-1 is unlimited)
                     'limit'         => -1,
@@ -1168,6 +1181,7 @@ if ( !class_exists( 'Attachments' ) ) :
                                 <div class="dimensions"><?php echo isset( $attachment->width ) ? $attachment->width : '{{ attachments.width }}' ; ?> &times; <?php echo isset( $attachment->height ) ? $attachment->height : '{{ attachments.height }}' ; ?></div>
                             <?php endif; ?>
                             <div class="delete-attachment"><a href="#"><?php _e( 'Remove', 'attachments' ); ?></a></div>
+                            <div class="attachments-attachment-fields-toggle"><a href="#"><?php _e( 'Toggle Fields', 'attachments' ); ?></a></div>
                         </div>
                     </div>
 
