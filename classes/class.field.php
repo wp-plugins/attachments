@@ -10,15 +10,10 @@
 // Declare our class
 if ( !class_exists( 'Attachments_Field' ) ) :
 
-    interface Attachments_Field_Template
-    {
-        public function html( $field );
-        public function format_value_for_input( $value, $field = null );
-        public function assets();
-        public function init();
-    }
-
-    class Attachments_Field implements Attachments_Field_Template
+    /**
+     * Attachments_Field
+     */
+    abstract class Attachments_Field
     {
         public $instance;       // the instance this field is used within
         public $name;           // the user-defined field name
@@ -30,23 +25,46 @@ if ( !class_exists( 'Attachments_Field' ) ) :
         public $value;          // the value for the field
         public $defaults;       // stores possible defaults the user can use which correlate with WP Media meta
         public $default;        // the user-defined default value when first selected from the modal
+        public $meta;           // houses any metadata necessary for the field
 
-        function __construct( $name = 'name', $label = 'Name', $value = null )
+
+
+        /**
+         * Constructor
+         * @param string $name  Field name
+         * @param string $label Field label
+         * @param mixed $value Field value
+         */
+        function __construct( $name = 'name', $label = 'Name', $value = null, $meta = array() )
         {
             $this->name     = sanitize_title( $name );
             $this->label    = __( esc_attr( $label) );
             $this->value    = $value;
             $this->default  = '';
-
+            $this->meta     = $meta;
             $this->defaults = array( 'title', 'caption', 'alt', 'description' ); // WordPress-specific Media meta
             // TODO: determine how to integrate with custom metadata that was added to Media
         }
 
+
+
+        /**
+         * Sets the field instance
+         * @param string $instance The instance name
+         * @param Attachments_Field $field    The field object
+         */
         function set_field_instance( $instance, $field )
         {
             $field->instance = $instance;
         }
 
+
+
+        /**
+         * Sets the UID, name, and id of the field
+         * @param Attachments_Field $field The field object
+         * @param string $uid   Existing UID if applicable
+         */
         function set_field_identifiers( $field, $uid = null )
         {
             // we MUST have an instance
@@ -65,39 +83,63 @@ if ( !class_exists( 'Attachments_Field' ) ) :
             $field->field_id = $this->field_name . $this->uid;
         }
 
+
+
+        /**
+         * Sets the field type of the field
+         * @param string $field_type Registered field type name
+         */
         function set_field_type( $field_type )
         {
             $this->type = $field_type;
         }
 
+
+
+        /**
+         * Sets the WordPress meta attribute to be used as the default
+         * @param string $default One of the approved defauls (title, caption, alt, description)
+         */
         function set_field_default( $default = '' )
         {
             if( is_string( $default ) && !empty( $default ) && in_array( strtolower( $default ), $this->defaults ) )
                 $this->default = strtolower( $default );
         }
 
-        public function html( $field )
-        {
-        ?>
-            <input type="text" name="<?php esc_attr_e( $field->field_name ); ?>" id="<?php esc_attr_e( $field->field_id ); ?>" class="attachments attachments-field attachments-field-<?php esc_attr_e( $field->field_name ); ?> attachments-field-<?php esc_attr_e( $field->field_id ); ?>" value="<?php esc_attr_e( $field->value ); ?>" data-default="<?php esc_attr_e( $field->default ); ?>" />
-        <?php
-        }
 
-        public function format_value_for_input( $value, $field = null )
-        {
-            return $value;
-        }
 
-        public function assets()
-        {
-            return;
-        }
+        /**
+         * Outputs the HTML for the field
+         * @param  Attachments_Field $field The field object
+         * @return void
+         */
+        abstract public function html( $field );
 
-        public function init()
-        {
-            return;
-        }
 
+
+        /**
+         * Filter the field value to appear within the input as expected
+         * @param  string $value The field value
+         * @param  Attachments_field $field The field object
+         * @return string        The formatted value
+         */
+        abstract public function format_value_for_input( $value, $field = null );
+
+
+
+        /**
+         * Fires once per field type per instance and outputs any additional assets (e.g. external JavaScript)
+         * @return void
+         */
+        abstract public function assets();
+
+
+
+        /**
+         * Hook into WordPress' init action
+         * @return void
+         */
+        abstract public function init();
     }
 
 endif; // class_exists check

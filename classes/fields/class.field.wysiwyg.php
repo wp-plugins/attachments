@@ -7,16 +7,28 @@
  * @subpackage Main
  */
 
-class Attachments_Field_WYSIWYG extends Attachments_Field implements Attachments_Field_Template
+class Attachments_Field_WYSIWYG extends Attachments_Field
 {
 
-    function __construct( $name = 'name', $label = 'Name', $value = null )
+    /**
+     * Constructor
+     * @param string $name  Field name
+     * @param string $label Field label
+     * @param mixed $value Field value
+     */
+    function __construct( $name = 'name', $label = 'Name', $value = null, $meta = array() )
     {
-        parent::__construct( $name, $label, $value );
+        parent::__construct( $name, $label, $value, $meta );
 
         add_filter( 'wp_default_editor',    array( $this, 'wp_default_editor' ) );
     }
 
+
+
+    /**
+     * Hook into WordPress' init action
+     * @return void
+     */
     function init()
     {
         global $post;
@@ -29,6 +41,13 @@ class Attachments_Field_WYSIWYG extends Attachments_Field implements Attachments
             echo '<style type="text/css">#poststuff .postarea { display:none; }</style>';
     }
 
+
+
+    /**
+     * Outputs the HTML for the field
+     * @param  Attachments_Field $field The field object
+     * @return void
+     */
     function html( $field )
     {
     ?>
@@ -40,6 +59,12 @@ class Attachments_Field_WYSIWYG extends Attachments_Field implements Attachments
     <?php
     }
 
+
+
+    /**
+     * Fires once per field type per instance and outputs any additional assets (e.g. external JavaScript)
+     * @return void
+     */
     function assets()
     {
         if( 'true' == get_user_meta( get_current_user_id(), 'rich_editing', true ) ) :
@@ -96,11 +121,25 @@ class Attachments_Field_WYSIWYG extends Attachments_Field implements Attachments
         endif;
     }
 
+
+
+    /**
+     * Filter the field value to appear within the input as expected
+     * @param  string $value The field value
+     * @param  Attachments_field $field The field object
+     * @return string        The formatted value
+     */
     function format_value_for_input( $value, $field = null  )
     {
         return wp_richedit_pre( $value );
     }
 
+
+
+    /**
+     * Callback for 'wp_default_editor' action in constructor. Sets the default editor to TinyMCE.
+     * @return string Editor name
+     */
     function wp_default_editor()
     {
         return 'tinymce'; // html or tinymce

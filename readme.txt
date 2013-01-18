@@ -4,7 +4,7 @@ Donate link: http://mondaybynoon.com/donate/
 Tags: post, page, posts, pages, images, PDF, doc, Word, image, jpg, jpeg, picture, pictures, photos, attachment
 Requires at least: 3.0
 Tested up to: 3.5
-Stable tag: 3.2
+Stable tag: 3.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -91,7 +91,11 @@ Attachments uses WordPress' built in Media library for uploads and storage.
 
 = I lost my Attachments after upgrading! =
 
-***DO NOT update any Post/Page/CPT that should have existing Attachments***, the data *has not been lost*. Please reference the **Installation > Upgrade Notice** details.
+***DO NOT update any Post/Page/CPT that should have existing Attachments***, the data *has not been lost*.
+
+If you disabled the default intsance after migrating, used the default values when migrating, and used a snippet from the docs to add a new one, **make sure your instance names match**. The default value during migration uses an instance name of `attachments` while many snippets use `my_attachments`.
+
+Else: please reference the **Installation > Upgrade Notice** details.
 
 == Screenshots ==
 
@@ -102,6 +106,12 @@ Attachments uses WordPress' built in Media library for uploads and storage.
 5. Drag and drop to sort
 
 == Changelog ==
+
+= 3.3 =
+* Added a `search()` method to allow searching for Attachments based on their attributes (e.g. attachment ID, post ID, post type, field values, etc.)
+* Improved the 'Remove' animation
+* New field: select
+* New parameter for Attachments attributes methods. You can pass the index (`int`) of the Attachment you'd like to utilize when firing the method.
 
 = 3.2 =
 * Added option to disable the Settings screen
@@ -338,18 +348,26 @@ Planned feature additions include:
 
 == Usage ==
 
+= Disable Settings Screen =
+
 Attachments ships with a `Settings` screen (found under the `Settings` menu in the main WordPress admin navigation) that facilitates data migration from version 1.x and also offers some code snippets. If you would like to **disable the Settings screen** add the following to your theme's `functions.php`:
 
 `define( 'ATTACHMENTS_SETTINGS_SCREEN', false ); // disable the Settings screen`
+
+= Setting Up Instances =
 
 When Attachments is first activated, a default instance is created titled Attachments. It has two fields:
 
 1. Title
 1. Caption
 
+**Disable the Default Instance**
+
 If you would like to *disable the default instance* (meta box titled 'Attachments' with a 'Title' and 'Caption' field) add the following to your `wp-config.php`:
 
 `define( 'ATTACHMENTS_DEFAULT_INSTANCE', false );`
+
+**Create Custom Instances**
 
 You may create instances with your own custom fields by using the `attachments_register` action. To create your own instance add the following to your theme's `functions.php` or your own plugin:
 
@@ -411,6 +429,69 @@ function my_attachments( $attachments )
 
 add_action( 'attachments_register', 'my_attachments' );`
 
+**Fields Reference**
+
+At this time there are **four** field types available:
+
+1. `text`
+1. `textarea`
+1. `select`
+1. `wysiwyg`
+
+When declaring fields for your instance, you'll be composing an array of fields, each with an array of parameters that set the various attributes of each field. Here is a full example of all available parameters for all available fields:
+
+`<?php
+/**
+ * Fields for the instance are stored in an array. Each field consists of
+ * an array with three required keys: name, type, label
+ * and one optional key: meta
+ *
+ * name    - (string) The field name used. No special characters.
+ * type    - (string) The registered field type.
+ *                  Fields available: text, textarea, wysiwyg, select
+ * label   - (string) The label displayed for the field.
+ * default - (string) The default WordPress metadata to use when initially adding the Attachment
+ *                  Defaults available: title, caption, alt, description
+ * meta    - (array) The field-specific parameters that apply only to that field type
+ */
+
+$fields         => array(
+  array(
+    'name'      => 'title',                             // unique field name
+    'type'      => 'text',                              // registered field type
+    'label'     => __( 'Title', 'attachments' ),        // label to display
+    'default'   => 'title',                             // default value upon selection
+  ),
+  array(
+    'name'      => 'caption',                           // unique field name
+    'type'      => 'textarea',                          // registered field type
+    'label'     => __( 'Caption', 'attachments' ),      // label to display
+    'default'   => 'caption',                           // default value upon selection
+  ),
+  array(
+    'name'      => 'option',                            // unique field name
+    'type'      => 'select',                            // registered field type
+    'label'     => __( 'Option', 'attachments' ),       // label to display
+    'meta'      => array(                               // field-specific meta as defined by field class
+                    'allow_null'    => true,            // allow null value? (adds 'empty' <option>)
+                    'multiple'      => true,            // multiple <select>?
+                    'options'       => array(           // the <option>s to use
+                          '1'     => 'Option 1',
+                          '2'     => 'Option 2',
+                      )
+                  ),
+  ),
+  array(
+    'name'      => 'description',                       // unique field name
+    'type'      => 'wysiwyg',                           // registered field type
+    'label'     => __( 'Description', 'attachments' ),  // label to display
+    'default'   => 'description',                       // default value upon selection
+  ),
+);
+?>`
+
+= Pulling Attachments to your Theme =
+
 Once your instances are set up and working, you'll also need to edit your theme's template files to pull the data to the front end. To retrieve the Attachments for the current post, add this within The Loop:
 
 `<?php $attachments = new Attachments( 'attachments' ); /* pass the instance name */ ?>
@@ -424,6 +505,8 @@ Once your instances are set up and working, you'll also need to edit your theme'
     <?php endwhile; ?>
   </ul>
 <?php endif; ?>`
+
+**Retrieve Attachments Outside The Loop**
 
 If you want to get the Attachments for a post **outside The Loop**, add a second parameter with the post ID when instantiating Attachments:
 
@@ -441,6 +524,8 @@ If you want to get the Attachments for a post **outside The Loop**, add a second
     <?php endwhile; ?>
   </ul>
 <?php endif; ?>`
+
+**Retrieve Attachment Attributes**
 
 You can also retrieve various attributes of the current Attachment using these utility functions:
 
@@ -465,12 +550,72 @@ You can also retrieve various attributes of the current Attachment using these u
   </ul>
 <?php endif; ?>`
 
+**Retrieve Single Attachments**
+
 If you don't want to use the above implementation to loop through your Attachments, can also retrieve them explicitly:
 
 `<?php $attachments = new Attachments( 'attachments' ); ?>
 <?php if( $attachments->exist() ) : ?>
-  <?php if( $attachment = $attachments->get_single( 0 ) ) : ?>
+  <?php $my_index = 0; ?>
+  <?php if( $attachment = $attachments->get_single( $my_index ) ) : ?>
     <h3>Attachment at index 0:</h3>
     <pre><?php print_r( $attachment ); ?></pre>
+    <ul>
+      <li>
+        ID: <?php echo $attachments->id( $my_index ); ?><br />
+        Type: <?php echo $attachments->type( $my_index ); ?><br />
+        Subtype: <?php echo $attachments->subtype( $my_index ); ?><br />
+        URL: <?php echo $attachments->url( $my_index ); ?><br />
+        Image: <?php echo $attachments->image( 'thumbnail', $my_index ); ?><br />
+        Source: <?php echo $attachments->src( 'full', $my_index ); ?><br />
+        Size: <?php echo $attachments->filesize( $my_index ); ?><br />
+        Title Field: <?php echo $attachments->field( 'title', $my_index ); ?><br />
+        Caption Field: Name: <?php echo $attachments->field( 'caption', $my_index ); ?>
+      </li>
+    </ul>
   <?php endif; ?>
 <?php endif; ?>`
+
+= Search =
+
+Attachments provides a method of searching it's own data using a number of attributes. This faciliates a search to be as widespread or as specific as you'd like.
+
+`<?php
+  $attachments = new Attachments();
+
+  $search_args = array(
+      'instance'      => 'attachments',       // search all instances
+      'fields'        => array( 'caption' ),  // search the 'caption' field only
+    );
+
+  $attachments->search( 'lorem ipsum', $search_args );  // search for 'lorem ipsum'
+
+  if( $attachments->exist() ) : ?>
+    <h3>Attachments</h3>
+    <ul>
+      <?php while( $attachments->get() ) : ?>
+        <li>
+          Attachment ID: <?php echo $attachments->id(); ?><br />
+          Post ID: <?php echo $attachments->post_id(); ?><br />
+          Title Field: <?php echo $attachments->field( 'title' ); ?><br />
+          Caption Field: <?php echo $attachments->field( 'caption' ); ?>
+        </li>
+      <?php endwhile; ?>
+    </ul>
+  <?php endif;
+?>`
+
+The full list of available search arguments (and their defaults) is as follows:
+
+`<?php
+  $defaults = array(
+      'attachment_id' => null,            // (int) not searching for a single attachment ID
+      'instance'      => 'attachments',   // (string) the instance you want to search
+      'post_type'     => null,            // (string) search 'any' post type
+      'post_id'       => null,            // (int) searching all posts
+      'post_status'   => 'publish',       // (string) search only published posts
+      'fields'        => null,            // (string|array) search all fields
+  );
+?>`
+
+Once you've performed your search, you can loop through the returned Attachments as you normally would.
