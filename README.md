@@ -157,6 +157,9 @@ function my_attachments( $attachments )
     // text for modal 'Attach' button (string)
     'modal_text'    => __( 'Attach', 'attachments' ),
 
+    // which tab should be the default in the modal (string) (browse|upload)
+    'router'        => 'browse',
+
     // fields array
     'fields'        => $fields,
 
@@ -410,15 +413,18 @@ Attachments uses WordPress' built in Media library for uploads and storage.
 
 #### I lost my Attachments after upgrading!
 
-***DO NOT update any Post/Page/CPT with Attachments***, the data has not been lost. Please **[Upgrade notice](#upgrade-notice)**.
+***DO NOT update any Post/Page/CPT with Attachments***, the data has not been lost. Please reference the **[Upgrade notice](#upgrade-notice)**.
 
 ## Changelog
 
 <dl>
 
-    <dd>3.3.1</dd>
-    <dt>Added meta box positioning arguments when registering instances</dt>
-    <dt>Cleaned up some CSS when Attachments instances are in the sidebar</dt>
+    <dt>3.3.2</dt>
+    <dd>You can now specify which view is default when browsing the Media modal (e.g. have 'Upload Files' be default instead of 'Media Library')</dd>
+
+    <dt>3.3.1</dt>
+    <dd>Added meta box positioning arguments when registering instances</dd>
+    <dd>Cleaned up some CSS when Attachments instances are in the sidebar</dd>
 
     <dt>3.3</dt>
     <dd>Added a <code>search()</code> method to allow searching for Attachments based on their attributes (e.g. attachment ID, post ID, post type, field values, etc.)</dd>
