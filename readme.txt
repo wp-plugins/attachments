@@ -4,7 +4,7 @@ Donate link: http://mondaybynoon.com/donate/
 Tags: post, page, posts, pages, images, PDF, doc, Word, image, jpg, jpeg, picture, pictures, photos, attachment
 Requires at least: 3.0
 Tested up to: 3.5.1
-Stable tag: 3.3.2
+Stable tag: 3.3.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -16,7 +16,7 @@ Attachments allows you to simply append any number of items from your WordPress 
 
 = Updated for WordPress 3.5! =
 
-WordPress 3.5 ships with an amazing new Media workflow and Attachments 3.0 makes great use of it. *If you are not running WordPress 3.5, version 1.6.2.1 will be used until you upgrade to WordPress 3.5.*
+WordPress 3.5 ships with an amazing new Media workflow and Attachments 3.0 makes great use of it. *If you are not running WordPress 3.5, the (now deprecated) version 1.6.2.1 (included with Attachments 3.x) will be used until you upgrade to WordPress 3.5+*
 
 = Associate Media items with posts =
 
@@ -61,7 +61,7 @@ There is a lot more information on [Attachments' GitHub page](https://github.com
 
 = Upgrading from version 1.x =
 
-**You will need to update your theme files that use Attachments 3.0**. Version 1.x of Attachments has been *fully deprecated* but is still available. If you would like to continue to use the (no longer supported) 1.x version you may add the following to your wp-config.php:
+**You will need to update your theme files that use Attachments 3.0**. Version 1.x of Attachments has been **fully deprecated** but is still available *and included with Attachments 3.x*. If you would like to continue to use the (no longer supported) 1.x version you may add the following to your `wp-config.php`:
 
 `define( 'ATTACHMENTS_LEGACY', true ); // force the legacy version of Attachments`
 
@@ -106,6 +106,10 @@ Else: please reference the **Installation > Upgrade Notice** details.
 5. Drag and drop to sort
 
 == Changelog ==
+
+= 3.3.3 =
+* Fixed a PHP Warning when activated using Multisite
+* Slightly modified the migration process to better handle plugins like WPML (props sebastian.friedrich)
 
 = 3.3.2 =
 * You can now specify which view is default when browsing the Media modal (e.g. have 'Upload Files' be default instead of 'Media Library')
