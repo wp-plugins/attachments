@@ -59,7 +59,7 @@ if ( !class_exists( 'Attachments' ) ) :
 
             // establish our environment variables
 
-            $this->version  = '3.3.3';
+            $this->version  = '3.4';
             $this->url      = ATTACHMENTS_URL;
             $this->dir      = ATTACHMENTS_DIR;
 
@@ -81,7 +81,7 @@ if ( !class_exists( 'Attachments' ) ) :
             add_action( 'admin_enqueue_scripts',        array( $this, 'admin_pointer' ), 999 );
 
             // register our user-defined instances
-            add_action( 'init',                         array( $this, 'do_actions_filters' ) );
+            add_action( 'init',                         array( $this, 'setup_instances' ) );
 
             // determine which instances apply to the current post type
             add_action( 'init',                         array( $this, 'set_instances_for_current_post_type' ) );
@@ -100,9 +100,31 @@ if ( !class_exists( 'Attachments' ) ) :
             add_action( 'admin_head',                   array( $this, 'field_inits' ) );
             add_action( 'admin_print_footer_scripts',   array( $this, 'field_assets' ) );
 
-            // set our attachments if necessary
-            if( !is_null( $instance ) )
+            // execution of actions varies depending on whether we're in the admin or not and an instance was passed
+            if( is_admin() )
+            {
+                add_action( 'after_setup_theme', array( $this, 'apply_init_filters' ) );
                 $this->attachments = $this->get_attachments( $instance, $post_id );
+            }
+            elseif( !is_null( $instance ) )
+            {
+                $this->apply_init_filters();
+                $this->attachments = $this->get_attachments( $instance, $post_id );
+            }
+
+        }
+
+
+
+        /**
+         * Various initialization filter triggers
+         *
+         * @since 3.4
+         */
+        function apply_init_filters()
+        {
+            // allows a different meta_key to be used
+            $this->meta_key = apply_filters( 'attachments_meta_key', $this->meta_key );
         }
 
 
@@ -114,6 +136,15 @@ if ( !class_exists( 'Attachments' ) ) :
          */
         function check_for_legacy_data()
         {
+            // we'll get a warning issued if fired when Network Activated
+            // since it's supremely unlikely we'd have legacy data at this point, we're going to short circuit
+            if( is_multisite() )
+            {
+                $plugins = get_site_option( 'active_sitewide_plugins' );
+                if ( isset($plugins['attachments/index.php']) )
+                    return;
+            }
+
             // deal with our legacy issues if the user hasn't dismissed or migrated already
             if( false == get_option( 'attachments_migrated' ) && false == get_option( 'attachments_ignore_migration' ) )
             {
@@ -370,7 +401,7 @@ if ( !class_exists( 'Attachments' ) ) :
             else
             {
                 // either it's not an image or we don't have the proper size, so we'll use the icon
-                $asset = $this->icon();
+                $asset = $this->icon( $index );
             }
 
             return $asset;
@@ -399,7 +430,7 @@ if ( !class_exists( 'Attachments' ) ) :
          */
         function image( $size = 'thumbnail', $index = null )
         {
-            $asset = $this->asset( $size );
+            $asset = $this->asset( $size, $index );
 
             $image_src      = $asset[0];
             $image_width    = $asset[1];
@@ -421,7 +452,7 @@ if ( !class_exists( 'Attachments' ) ) :
          */
         function src( $size = 'thumbnail', $index = null )
         {
-            $asset = $this->asset( $size );
+            $asset = $this->asset( $size, $index );
             return $asset[0];
         }
 
@@ -550,7 +581,7 @@ if ( !class_exists( 'Attachments' ) ) :
          *
          * @since 3.0
          */
-        function do_actions_filters()
+        function setup_instances()
         {
             // implement our default instance if appropriate
             if( !defined( 'ATTACHMENTS_DEFAULT_INSTANCE' ) )
@@ -632,9 +663,14 @@ if ( !class_exists( 'Attachments' ) ) :
 
             ?>
 
-            <div id="attachments-<?php echo $instance->name; ?>" class="attachments-parent-container">
+            <div id="attachments-<?php echo $instance->name; ?>" class="attachments-parent-container<?php if( $instance->append == false ) : ?> attachments-prepend<?php endif; ?>">
                 <?php if( !empty( $instance->note ) ) : ?>
                     <div class="attachments-note"><?php echo apply_filters( 'the_content', $instance->note ); ?></div>
+                <?php endif; ?>
+                <?php if( $instance->append == false ) : ?>
+                    <div class="attachments-invoke-wrapper">
+                        <a class="button attachments-invoke"><?php _e( esc_attr( $instance->button_text ), 'attachments' ); ?></a>
+                    </div>
                 <?php endif; ?>
                 <div class="attachments-container attachments-<?php echo $instance->name; ?>"><?php
                         if( isset( $instance->attachments ) && !empty( $instance->attachments ) )
@@ -649,9 +685,11 @@ if ( !class_exists( 'Attachments' ) ) :
                             }
                         }
                     ?></div>
-                <div class="attachments-invoke-wrapper">
-                    <a class="button attachments-invoke"><?php _e( esc_attr( $instance->button_text ), 'attachments' ); ?></a>
-                </div>
+                <?php if( $instance->append == true ) : ?>
+                    <div class="attachments-invoke-wrapper">
+                        <a class="button attachments-invoke"><?php _e( esc_attr( $instance->button_text ), 'attachments' ); ?></a>
+                    </div>
+                <?php endif; ?>
             </div>
             <script type="text/javascript">
                 jQuery(document).ready(function($){
@@ -734,7 +772,7 @@ if ( !class_exists( 'Attachments' ) ) :
                                 var templateData = attachment.attributes;
 
                                 // append the template
-                                $element.find('.attachments-container').append(template(templateData));
+                                $element.find('.attachments-container').<?php if( $instance->append ) : ?>append<?php else : ?>prepend<?php endif; ?>(template(templateData));
 
                                 // if we're in a sidebar we DO want to show the fields which are normally hidden on load via CSS
                                 if($element.parents('#side-sortables')){
@@ -918,6 +956,10 @@ if ( !class_exists( 'Attachments' ) ) :
 
                     // include a note within the meta box (string)
                     'note'          => null,    // no note
+
+                    // by default new Attachments will be appended to the list
+                    // but you can have then prepend if you set this to false
+                    'append'        => true,
 
                     // text for 'Attach' button (string)
                     'button_text'   => __( 'Attach', 'attachments' ),
@@ -1450,14 +1492,19 @@ if ( !class_exists( 'Attachments' ) ) :
             elseif( is_null( $instance ) )
             {
                 // return them all, regardless of instance
-                foreach( $attachments_raw as $instance => $attachments_unprocessed )
-                    foreach( $attachments_unprocessed as $unprocessed_attachment )
-                        $attachments[] = $this->process_attachment( $unprocessed_attachment, $instance );
+                if( is_array( $attachments_raw ) && count( $attachments_raw ) )
+                    foreach( $attachments_raw as $instance => $attachments_unprocessed )
+                        foreach( $attachments_unprocessed as $unprocessed_attachment )
+                            $attachments[] = $this->process_attachment( $unprocessed_attachment, $instance );
             }
 
             // tack on the post ID for each attachment
             for( $i = 0; $i < count( $attachments ); $i++ )
                 $attachments[$i]->post_id = $post_id;
+
+            // we don't want the filter to run on the admin side of things
+            if( !is_admin() )
+                $attachments = apply_filters( "attachments_get_{$instance}", $attachments );
 
             return $attachments;
         }
