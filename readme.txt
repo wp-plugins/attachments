@@ -4,7 +4,7 @@ Donate link: http://mondaybynoon.com/donate/
 Tags: post, page, posts, pages, images, PDF, doc, Word, image, jpg, jpeg, picture, pictures, photos, attachment
 Requires at least: 3.0
 Tested up to: 3.6
-Stable tag: 3.5.1
+Stable tag: 3.5.1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -14,7 +14,11 @@ Attachments allows you to simply append any number of items from your WordPress 
 
 **Extensive** usage instructions are [available on GitHub](https://github.com/jchristopher/attachments/#attachments)
 
-Attachments allows you to simply append any number of items from your WordPress Media Library to Posts, Pages, and Custom Post Types. This plugin *does not* directly interact with your theme, you will need to edit your template files.
+Attachments allows you to simply append any number of items from your WordPress Media Library to Posts, Pages, and Custom Post Types.
+
+= Extend Attachments with add-ons =
+
+This plugin *does not* directly interact with your theme, you will need to edit your template files. If you prefer working with a UI, take a look at <a href="https://mondaybynoon.com/members/plugins/attachments-ui/?utm_campaign=Attachments&utm_term=wp%2breadme">Attachments UI</a>
 
 = Associate Media items with posts =
 
@@ -67,6 +71,12 @@ Version 3 is a *major* rewrite. While I've taken precautions in ensuring you won
 
 == Frequently Asked Questions ==
 
+= How do I customize this plugin? =
+
+Please use [Attachments UI](https://mondaybynoon.com/members/plugins/attachments-ui/?utm_campaign=Attachments&utm_term=wp%2breadme%2bFAQ) or see the [documentation](https://github.com/jchristopher/attachments#documentation)
+
+= This doesn't answer my question =
+
 Please see [Issues on GitHub](https://github.com/jchristopher/attachments/issues)
 
 == Screenshots ==
@@ -80,6 +90,9 @@ Please see [Issues on GitHub](https://github.com/jchristopher/attachments/issues
 == Changelog ==
 
 Please see [Attachments' changelog on GitHub](https://github.com/jchristopher/attachments/docs/changelog.md)
+
+= 3.5.1.1 =
+* Fixed an issue where Featured Images may have become inadvertently disabled, props @deborre
 
 = 3.5.1 =
 * Fixed an issue where changing an Attachment changed all attachments, props @bartoszwww

@@ -55,7 +55,7 @@ if( !class_exists( 'Attachments' ) ) :
             global $_wp_additional_image_sizes;
 
             // establish our environment variables
-            $this->version  = '3.5.1';
+            $this->version  = '3.5.1.1';
             $this->url      = ATTACHMENTS_URL;
             $this->dir      = ATTACHMENTS_DIR;
             $plugin         = 'attachments/index.php';
@@ -74,6 +74,9 @@ if( !class_exists( 'Attachments' ) ) :
 
             // add 'Extend' link
             add_filter( "plugin_action_links_$plugin",  array( $this, 'plugin_settings_link' ) );
+
+            // add update message(s)
+            add_action( 'in_plugin_update_message-attachments/index.php', array( $this, 'update_message' ) );
 
             // set up l10n
             add_action( 'plugins_loaded',               array( $this, 'l10n' ) );
@@ -106,7 +109,7 @@ if( !class_exists( 'Attachments' ) ) :
             // execution of actions varies depending on whether we're in the admin or not and an instance was passed
             if( is_admin() )
             {
-                add_action( 'after_setup_theme', array( $this, 'apply_init_filters' ) );
+                add_action( 'after_setup_theme', array( $this, 'apply_init_filters' ), 999 );
                 $this->attachments = $this->get_attachments( $instance, $post_id );
             }
             elseif( !is_null( $instance ) )
@@ -119,8 +122,29 @@ if( !class_exists( 'Attachments' ) ) :
 
 
 
+        /**
+         * Add notification about available Attachments extensions
+         */
+        function update_message()
+        { ?>
+            <div style="margin-top:10px;padding-top:8px;border-top:1px solid #eaeaea;"><span style="color:#f00;"><?php _e( 'Attachments Extensions Available!', 'attachments' ); ?></span> <span style="font-weight:normal;"><?php _e( 'These utilities make working with Attachments even easier!', 'attachments' ); ?></span></div>
+            <div style="font-weight:normal;padding-top:8px;">
+                <p><strong><a href="https://mondaybynoon.com/members/plugins/attachments-ui/?utm_campaign=Attachments&utm_term=Upgrade%2bNotice">Attachments UI</a></strong> - <?php _e( 'Create Attachments Instances with an easy-to-use UI, easily limit meta box locations with fine grained control (e.g. Home page only), and more.', 'attachments' ); ?></p>
+            </div>
+        <?php }
+
+
+
+        /**
+         * Customize the links on the Plugins list page
+         *
+         * @param $links
+         * @return mixed
+         */
         function plugin_settings_link( $links )
         {
+            $settings_link = '<a href="options-general.php?page=attachments">'. __( 'Settings', 'attachments' ) . '</a>';
+            array_unshift( $links, $settings_link );
             $extend_link = '<a href="https://mondaybynoon.com/members/plugins/#attachments">'. __( 'Extend', 'attachments' ) . '</a>';
             array_unshift( $links, $extend_link );
             return $links;
