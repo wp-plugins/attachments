@@ -55,7 +55,7 @@ if( !class_exists( 'Attachments' ) ) :
             global $_wp_additional_image_sizes;
 
             // establish our environment variables
-            $this->version  = '3.5.1.1';
+            $this->version  = '3.5.2';
             $this->url      = ATTACHMENTS_URL;
             $this->dir      = ATTACHMENTS_DIR;
             $plugin         = 'attachments/index.php';
@@ -274,7 +274,7 @@ if( !class_exists( 'Attachments' ) ) :
          */
         function l10n()
         {
-            load_plugin_textdomain( 'attachments', false, trailingslashit( ATTACHMENTS_DIR ) . 'languages' );
+	          load_plugin_textdomain( 'attachments', false, 'attachments/languages/' );
         }
 
 
@@ -809,7 +809,7 @@ if( !class_exists( 'Attachments' ) ) :
                             _.templateSettings = {
                                 variable : 'attachments',
                                 interpolate : /\{\{(.+?)\}\}/g
-                            }
+                            };
 
                             var template = _.template($('script#tmpl-attachments-<?php echo $instance->name; ?>').html());
 
@@ -1347,9 +1347,11 @@ if( !class_exists( 'Attachments' ) ) :
                             if( !isset( $attachment_meta['file'] ))
                                 $attachment_meta['file'] = get_attached_file( $attachment->id );
 
+														$filename = explode( "/", $attachment_meta['file'] );
+
                             $attachment->width      = isset( $attachment_meta['width'] ) ? $attachment_meta['width'] : null;
                             $attachment->height     = isset( $attachment_meta['height'] ) ? $attachment_meta['height'] : null;
-                            $attachment->filename   = end( explode( "/", $attachment_meta['file'] ) );
+                            $attachment->filename   = basename( $attachment_meta['file'] );
 
                             $attachment_mime        = explode( '/', get_post_mime_type( $attachment->id ) );
                             $attachment->type       = isset( $attachment_mime[0] ) ? $attachment_mime[0] : null;
@@ -1541,7 +1543,7 @@ if( !class_exists( 'Attachments' ) ) :
                 // loop through each Attachment of this instance
                 foreach( $instance_attachments as $key => $attachment )
                 {
-                    $attachment_exists = get_post( $attachment['id'] );
+                    $attachment_exists = isset( $attachment['id'] ) ? get_post( $attachment['id'] ) : false;
                     // make sure the attachment exists
                     if( $attachment_exists )
                     {
@@ -1697,6 +1699,14 @@ if( !class_exists( 'Attachments' ) ) :
             $attachments_json   = get_post_meta( $post_id, $this->meta_key, true );
             $attachments_raw    = is_string( $attachments_json ) ? json_decode( $attachments_json ) : false;
 
+	          // convert field newline characters properly
+	          if( !empty( $attachments_raw ) )
+		          foreach( $attachments_raw as $instanceKey => $instance )
+								foreach( $instance as $attachmentKey => $attachment )
+									if( isset( $attachment->fields ) )
+										foreach( $attachment->fields as $fieldKey => $fieldValue )
+											$attachment->fields->$fieldKey = str_replace( '\\n', "\n", $fieldValue );
+
             return $attachments_raw;
         }
 
@@ -1748,7 +1758,7 @@ if( !class_exists( 'Attachments' ) ) :
             if( !is_object( $attachment ) || !is_string( $instance ) )
                 return $attachment;
 
-            if( is_object( $attachment->fields ) )
+            if( isset( $attachment->fields ) && is_object( $attachment->fields ) )
             {
                 foreach( $attachment->fields as $key => $value )
                 {
