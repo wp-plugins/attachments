@@ -55,7 +55,7 @@ if( !class_exists( 'Attachments' ) ) :
             global $_wp_additional_image_sizes;
 
             // establish our environment variables
-            $this->version  = '3.5.3';
+            $this->version  = '3.5.4';
             $this->url      = ATTACHMENTS_URL;
             $this->dir      = ATTACHMENTS_DIR;
             $plugin         = 'attachments/index.php';
@@ -98,8 +98,7 @@ if( !class_exists( 'Attachments' ) ) :
             add_action( 'save_post',                    array( $this, 'save' ) );
 
             // only show the Settings screen if it hasn't been explicitly disabled
-            if( !( defined( 'ATTACHMENTS_SETTINGS_SCREEN' ) && ATTACHMENTS_SETTINGS_SCREEN === false ) )
-                add_action( 'admin_menu',               array( $this, 'admin_page' ) );
+            add_action( 'admin_menu',                   array( $this, 'admin_page' ) );
 
             add_action( 'admin_head',                   array( $this, 'field_inits' ) );
             add_action( 'admin_print_footer_scripts',   array( $this, 'field_assets' ) );
@@ -332,6 +331,18 @@ if( !class_exists( 'Attachments' ) ) :
         function total()
         {
             return count( $this->attachments );
+        }
+
+
+
+        /**
+         * Resets the attachment index
+         *
+         * @since 3.6
+         */
+        function rewind()
+        {
+            $this->attachments_ref = -1;
         }
 
 
@@ -625,8 +636,10 @@ if( !class_exists( 'Attachments' ) ) :
         function setup_instances()
         {
             // implement our default instance if appropriate
-            if( !defined( 'ATTACHMENTS_DEFAULT_INSTANCE' ) )
-                $this->register();
+	        $filtered = apply_filters( 'attachments_default_instance', true );
+            if( $filtered && ( ! defined( 'ATTACHMENTS_DEFAULT_INSTANCE' ) || true == ATTACHMENTS_DEFAULT_INSTANCE ) ) {
+	            $this->register();
+            }
 
             // facilitate user-defined instance registration
             do_action( 'attachments_register', $this );
@@ -684,21 +697,22 @@ if( !class_exists( 'Attachments' ) ) :
                     $position           = isset($instance->position) ? $instance->position : 'normal';
                     $priority           = isset($instance->priority) ? $instance->priority : 'high';
 
-                    if( $applicable )
-                        add_meta_box(
-                            'attachments-' . $instance_name,
-                            __( esc_attr( $instance->label ) ),
-                            array( $this, 'meta_box_markup' ),
-                            $this->get_post_type(),
-                            $position,
-                            $priority,
-                            array(
-                                'instance'      => $instance,
-                                'setup_nonce'   => !$nonce_sent
-                            )
-                        );
+                    if( $applicable ) {
+	                    add_meta_box(
+		                    'attachments-' . $instance_name,
+		                    __( esc_attr( $instance->label ) ),
+		                    array( $this, 'meta_box_markup' ),
+		                    $this->get_post_type(),
+		                    $position,
+		                    $priority,
+		                    array(
+			                    'instance'      => $instance,
+			                    'setup_nonce'   => !$nonce_sent
+		                    )
+	                    );
+	                    $nonce_sent = true;
+                    }
 
-                    $nonce_sent = true;
                 }
             }
         }
@@ -721,8 +735,8 @@ if( !class_exists( 'Attachments' ) ) :
             ?>
 
             <div id="attachments-<?php echo $instance->name; ?>" class="attachments-parent-container<?php if( $instance->append == false ) : ?> attachments-prepend<?php endif; ?>">
-                <?php if( !empty( $instance->note ) ) : ?>
-                    <div class="attachments-note"><?php echo apply_filters( 'the_content', $instance->note ); ?></div>
+                <?php if( ! empty( $instance->note ) ) : ?>
+                    <div class="attachments-note"><?php echo wpautop( $instance->note ); ?></div>
                 <?php endif; ?>
                 <?php if( $instance->append == false ) : ?>
                     <div class="attachments-invoke-wrapper">
@@ -1222,7 +1236,7 @@ if( !class_exists( 'Attachments' ) ) :
             // TODO: Retrieving the post_type at this point is ugly to say the least. This needs major cleanup.
             if( empty( $post->ID ) && isset( $_GET['post_type'] ) )
             {
-                $post_type = str_replace( '-', '_', sanitize_title( $_GET['post_type'] ) ); // TODO: Better sanitization
+                $post_type = esc_attr( $_GET['post_type'] );
             }
             elseif( !empty( $post->ID ) )
             {
@@ -1543,18 +1557,20 @@ if( !class_exists( 'Attachments' ) ) :
                 // loop through each Attachment of this instance
                 foreach( $instance_attachments as $key => $attachment )
                 {
-	                  // see if it was pulled as JSON from a delete cleanup
-	                  if( is_object( $attachment ) )
-	                  {
-		                    $attachment = get_object_vars( $attachment );
-		                    if( is_array( $attachment ) && !empty( $attachment ) )
-		                    {
-			                      if( isset( $attachment['fields'] ) && is_object( $attachment['fields'] ) )
-				                        $attachment['fields'] = get_object_vars( $attachment['fields'] );
-		                    }
-	                  }
+	                // see if it was pulled as JSON from a delete cleanup
+	                if( is_object( $attachment ) )
+	                {
+		                $attachment = get_object_vars( $attachment );
+		                if( is_array( $attachment ) && !empty( $attachment ) )
+		                {
+			                if( isset( $attachment['fields'] ) && is_object( $attachment['fields'] ) ) {
+		                        $attachment['fields'] = get_object_vars( $attachment['fields'] );
+			                }
+		                }
+	                }
 
-		                $attachment_exists = isset( $attachment['id'] ) ? get_post( absint( $attachment['id'] ) ) : false;
+		            $attachment_exists = isset( $attachment['id'] ) ? get_post( absint( $attachment['id'] ) ) : false;
+
                     // make sure the attachment exists
                     if( $attachment_exists )
                     {
@@ -1586,6 +1602,19 @@ if( !class_exists( 'Attachments' ) ) :
                                 $attachment['fields'][$key] = $field_value;
                             }
                         }
+
+	                    // set the post parent if applicable
+	                    // need to first check to make sure we're not overwriting a native Attach
+	                    $attach_post_ref = $attachment_exists;
+	                    if( $attach_post_ref->post_parent == 0 && !empty( $this->instances[$instance]['post_parent'] ) ) {
+		                    // no current Attach, we can add ours
+		                    $attach_post = array(
+			                    'ID'            => absint( $attachment['id'] ),
+			                    'post_parent'   => $post_id,
+		                    );
+
+		                    wp_update_post( $attach_post );
+	                    }
 
                         $attachments[$instance][] = $attachment;
                     }
@@ -1847,9 +1876,12 @@ if( !class_exists( 'Attachments' ) ) :
          *
          * @since 3.0
          */
-        function admin_page()
-        {
-            add_options_page( 'Settings', __( 'Attachments', 'attachments' ), 'manage_options', 'attachments', array( $this, 'options_page' ) );
+        function admin_page() {
+	        if( !( defined( 'ATTACHMENTS_SETTINGS_SCREEN' ) && ATTACHMENTS_SETTINGS_SCREEN === false ) ) {
+		        if( apply_filters( 'attachments_settings_screen', true ) ) {
+			        add_options_page( 'Settings', __( 'Attachments', 'attachments' ), 'manage_options', 'attachments', array( $this, 'options_page' ) );
+		        }
+	        }
         }
 
 

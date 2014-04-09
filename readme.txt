@@ -3,8 +3,8 @@ Contributors: jchristopher
 Donate link: http://mondaybynoon.com/donate/
 Tags: post, page, posts, pages, images, PDF, doc, Word, image, jpg, jpeg, picture, pictures, photos, attachment
 Requires at least: 3.0
-Tested up to: 3.7
-Stable tag: 3.5.3
+Tested up to: 3.9
+Stable tag: 3.5.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -90,6 +90,18 @@ Please see [Issues on GitHub](https://github.com/jchristopher/attachments/issues
 == Changelog ==
 
 Please see [Attachments' changelog on GitHub](https://github.com/jchristopher/attachments/docs/changelog.md)
+
+= 3.5.4 =
+* Fixed assumption of field keys (props bukka)
+* Improved documentation (props Lane Goldberg, Roman Kokarev, Ore Landau)
+* Added <code>rewind()</code> method to reset Attachments reference array (props joost de keijzer)
+* TinyMCE fix to support WordPress 3.9+
+* Fixed an issue where nonce was potentially wrongly flagged as sent if an instance was filtered
+* Added <code>post_parent</code> argument support for instances, setting to <code>true</code> will populate the <strong>Uploaded to</strong> column in Media
+* New filter: <code>attachments_default_instance</code> to disable/enable the default instance (default is <code>true</code>, <code>ATTACHMENTS_DEFAULT_INSTANCE</code> constant is deprecated)
+* New filter: <code>attachments_settings_screen</code> to hide/show the settings screen (default is <code>true</code>, <code>ATTACHMENTS_SETTINGS_SCREEN</code> constant is deprecated)
+* Fixed an issue where Attachments meta box(es) would not show up when creating new posts whose <code>post_type</code> had a dash in it
+* Updated Italian translation (props Luca Speranza)
 
 = 3.5.3 =
 * Cleaned up PHP Warning/Notice (props Mike C.)
