@@ -726,7 +726,7 @@ if ( ! class_exists( 'Attachments' ) ) :
                         if ( isset( $instance->attachments ) && !empty( $instance->attachments ) ) {
                             foreach( $instance->attachments as $attachment ) {
                                 // we need to give our Attachment a uid to carry through to all the fields
-                                $attachment->uid = uniqid();
+	                            $attachment->uid = esc_attr( str_replace( '.', '', uniqid( '', true ) ) );
 
                                 // we'll create the attachment
                                 $this->create_attachment( $instance->name, $attachment );
@@ -785,7 +785,14 @@ if ( ! class_exists( 'Attachments' ) ) :
                             button: {
                                 // Set the text of the button.
                                 text: button
-                            }
+                            },
+                            
+                            // Enable filters
+                            states: [
+                                new wp.media.controller.Library({
+                                    filterable: 'all'
+                                })
+                            ]
                         });
 
                         // set up our select handler
@@ -872,11 +879,13 @@ if ( ! class_exists( 'Attachments' ) ) :
 
                     });
 
+	                var targetAttachment;
+
                     $element.on( 'click', '.edit-attachment-asset', function( event ) {
 
                         event.preventDefault();
 
-                        var targetAttachment = $(event.target).parents(".attachments-attachment");
+                        targetAttachment = $(event.target).parents(".attachments-attachment");
 
                         if ( editframe ) {
                             editframe.open();
@@ -892,7 +901,12 @@ if ( ! class_exists( 'Attachments' ) ) :
                             },
                             button: {
                                 text: '<?php _e( "Change", 'attachments' ); ?>'
-                            }
+                            },
+                            states: [
+                                new wp.media.controller.Library({
+                                    filterable: 'all'
+                                })
+                            ]
                         });
 
                         editframe.on( 'select', function(){
@@ -938,8 +952,6 @@ if ( ! class_exists( 'Attachments' ) ) :
                     } );
 
                     $element.on( 'click', '.delete-attachment a', function( event ) {
-
-                        var targetAttachment;
 
                         event.preventDefault();
 
@@ -1040,7 +1052,7 @@ if ( ! class_exists( 'Attachments' ) ) :
 
             // sanitize
             if ( isset( $params['name'] ) ) {
-               $params['name'] = str_replace( '-', '_', sanitize_title( $params['name'] ) );
+               $params['name'] = sanitize_text_field( $params['name'] );
             }
 
             if ( isset( $params['label'] ) ) {
@@ -1149,7 +1161,7 @@ if ( ! class_exists( 'Attachments' ) ) :
             }
 
             // make sure the instance name is proper
-            $instance = str_replace( '-', '_', sanitize_title( $name ) );
+            $instance = sanitize_text_field( $name );
 
             // register the fields
             if ( isset( $params['fields'] ) && is_array( $params['fields'] ) && count( $params['fields'] ) ) {
@@ -1505,6 +1517,8 @@ if ( ! class_exists( 'Attachments' ) ) :
 
             // final data store
             $attachments = array();
+
+	        $attachments_meta = apply_filters( 'attachments_meta_before_save', $attachments_meta, $post_id );
 
             // loop through each submitted instance
             foreach ( $attachments_meta as $instance => $instance_attachments ) {
